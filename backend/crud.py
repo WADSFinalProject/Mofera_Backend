@@ -13,6 +13,12 @@ def get_flour_by_id(db: Session, flour_id: int):
 def get_shipping_by_id(db: Session, shipping_id: int):
     return db.query(Shipping).filter(Shipping.id == shipping_id).first()
 
+def get_checkpoint_by_id(db: Session, checkpoint_id: int):
+    return db.query(CheckpointData).filter(CheckpointData.id == checkpoint_id).first()
+
+def get_checkpoints(db: Session, skip: int = 0, limit: int = 10):
+    return db.query(CheckpointData).offset(skip).limit(limit).all()
+
 def get_wet_leaves(db: Session, skip: int = 0, limit: int = 10):
     return db.query(WetLeaves).offset(skip).limit(limit).all()
 
@@ -53,6 +59,13 @@ def create_shipping (db: Session, shipping: ShippingDepature):
     db.refresh(db_shipping)
     return db_shipping
 
+def create_checkpoint (db: Session, checkpoint: CheckpointData):
+    db_checkpoint = CheckpointData(**checkpoint.dict())
+    db.add(db_checkpoint)
+    db.commit()
+    db.refresh(db_checkpoint)
+    return db_checkpoint
+
 def update_wet_leaves(db: Session, wet_leaves_id: int, wet_leaves: WetLeavesBase):
     db_wet_leaves = get_wet_leaves_by_id(db, wet_leaves_id)
     if db_wet_leaves:
@@ -89,6 +102,15 @@ def update_shipping(db: Session, shipping_id: int, shipping: ShippingDataRecord)
         db.refresh(db_shipping)
     return db_shipping
 
+def update_checkpoint(db: Session, checkpoint_id: int, checkpoint: CheckpointDataRecord):
+    db_checkpoint = get_checkpoint_by_id(db, checkpoint_id)
+    if db_checkpoint:
+        for key, value in checkpoint.dict().items():
+            setattr(db_checkpoint, key, value)
+        db.commit()
+        db.refresh(db_checkpoint)
+    return db_checkpoint
+
 def delete_wet_leaves(db: Session, wet_leaves_id: int):
     db_wet_leaves = get_wet_leaves_by_id(db, wet_leaves_id)
     if db_wet_leaves:
@@ -116,6 +138,13 @@ def delete_shipping(db: Session, shipping_id: int):
         db.delete(db_shipping)
         db.commit()
     return db_shipping
+
+def delete_checkpoint(db: Session, checkpoint_id: int):
+    db_checkpoint = get_checkpoint_by_id(db, checkpoint_id)
+    if db_checkpoint:
+        db.delete(db_checkpoint)
+        db.commit()
+    return db_checkpoint
 
 
 
