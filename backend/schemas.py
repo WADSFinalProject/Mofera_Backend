@@ -19,7 +19,7 @@ class VerificationEmailRequest(BaseModel):
     verification_link: str
 
 class WetLeavesBase(BaseModel):
-    weight: int
+    weight: float
 
 class WetLeavesRecord(WetLeavesBase):
     retrieval_date: date
@@ -33,8 +33,55 @@ class WetLeaves(WetLeavesBase):
     class Config:
         orm_mode = True
 
-# Checkpoint
+class DryLeavesBase(BaseModel):
 
+    id: int
+    weight: float
+
+class DryLeavesExp(DryLeavesBase):
+    exp_date: date
+    
+class DryLeaves(DryLeavesBase):
+        
+    id: int
+    exp_date: date
+
+
+    class Config:
+        orm_mode = True
+
+class FlourBase(BaseModel):
+    
+        id: int
+        weight: float
+
+class FlourExp(FlourBase):
+    finish_time: date
+
+class Flour(FlourBase):
+        
+        id: int
+        finish_time: date
+    
+        class Config:
+            orm_mode = True
+
+class ShippingDataRecord(BaseModel):
+         
+        id: int
+        expedition_id: int
+
+class ShippingDepature(ShippingDataRecord):
+        departure_date: date
+
+class ShippingData(ShippingDataRecord):
+            
+            id: int
+            expedition_id: int
+    
+            class Config:
+                orm_mode = True
+# Checkpoint
 class CheckpointDataRecord(BaseModel):
 
     id: int

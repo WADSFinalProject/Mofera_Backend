@@ -172,7 +172,6 @@ class Dry(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     weight = Column(Float)
-    start_time = Column(DateTime)
     exp_date = Column(Date)
 
 
@@ -181,5 +180,4 @@ class Flour(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     weight = Column(Float)
-    start_time = Column(DateTime)
     finish_time = Column(Date)
