@@ -14,6 +14,7 @@ import logging
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from pydantic import BaseModel
+from schemas import *
 
 
 router = APIRouter(
@@ -28,25 +29,6 @@ ALGORITHM = 'HS256'
 
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 auth2_bearer = OAuth2PasswordBearer(tokenUrl='auth/token')
-
-
-# pydantic models
-class CreateUserRequest(BaseModel):
-
-    username: str
-    email: str
-    password: str
-
-
-class Token(BaseModel):
-    access_token: str
-    token_type: str
-    username: str
-
-
-class VerificationEmailRequest(BaseModel):
-    email: str
-    verification_link: str
 
 
 def get_db():
