@@ -19,12 +19,26 @@ class VerificationEmailRequest(BaseModel):
     verification_link: str
 
 class WetLeavesBase(BaseModel):
-    retrieval_date: date
     weight: int
-    centra_id: int
+
+class WetLeavesRecord(WetLeavesBase):
+    retrieval_date: date
 
 class WetLeaves(WetLeavesBase):
+    
     id: int
+    retrieval_date: date
+    centra_id: int
 
     class Config:
         orm_mode = True
+
+# Checkpoint
+
+class CheckpointDataRecord(BaseModel):
+
+    id: int
+    shipping_id: int
+    total_received_package: int
+    total_sent_package: int
+    arrival_date: date
