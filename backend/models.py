@@ -3,23 +3,35 @@ from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, func, D
 from sqlalchemy.orm import relationship
 
 # Autn, admin, user
+
+
 class Admin(Base):
     __tablename__ = "admin"
 
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(length=500))
-    passwornd = Column(String(length=500))
+    password = Column(String(length=500))
+
 
 class Users(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String(length=500))
     email = Column(String(length=500), unique=True)
     hashed_password = Column(String(length=500))
-    
+    role_id = Column(Integer, ForeignKey("roles.id"))
+
     refresh_tokens = relationship(
-        "RefreshToken", back_populates="user", order_by="RefreshToken.expires_at.desc()")
+        "RefreshToken", back_populates="users", order_by="RefreshToken.expires_at.desc()")
+    role = relationship("Roles", back_populates="users")
+
+
+class Roles(Base):
+    __tablename__ = "roles"
+
+    id = Column(Integer, primary_key=True)
+    role = Column(String(length=500), unique=True)
 
 
 class RefreshToken(Base):
@@ -34,6 +46,7 @@ class RefreshToken(Base):
 
 # Centra, etc
 
+
 class Appointment(Base):
     __tablename__ = "appointment"
 
@@ -43,6 +56,7 @@ class Appointment(Base):
     pickup_time = Column(Date)
 
     shipping = relationship("Shipping", backref="appointment")
+
 
 class Centra(Base):
     __tablename__ = "centra"
@@ -55,7 +69,9 @@ class Centra(Base):
 
     collection_centra = relationship("Collection", backref="centra")
     package_data_centra = relationship("PackageData", backref="centra")
-    reception_package_centra = relationship("ReceptionPackage", backref="centra")
+    reception_package_centra = relationship(
+        "ReceptionPackage", backref="centra")
+
 
 class CheckpointData(Base):
     __tablename__ = "checkpoint_data"
@@ -66,11 +82,13 @@ class CheckpointData(Base):
 
     collection = relationship("ShippingCollection", backref="checkpoint_data")
 
+
 class Expedition(Base):
     __tablename__ = "expedition"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
+
 
 class PackageData(Base):
     __tablename__ = "package_data"
@@ -82,6 +100,7 @@ class PackageData(Base):
 
     centra_owner = relationship("Centra", backref="package_data")
 
+
 class RescaledPackageData(Base):
     __tablename__ = "rescaled_package_data"
 
@@ -89,7 +108,9 @@ class RescaledPackageData(Base):
     package_id = Column(Integer, ForeignKey("package_data.id"))
     rescaled_weight = Column(Float)
 
-    original_package = relationship("PackageData", backref="rescaled_package_data")
+    original_package = relationship(
+        "PackageData", backref="rescaled_package_data")
+
 
 class ReceptionPackage(Base):
     __tablename__ = "reception_package"
@@ -103,6 +124,7 @@ class ReceptionPackage(Base):
     source_centra = relationship("Centra", backref="reception_package")
     original_package = relationship("PackageData", backref="reception_package")
 
+
 class Shipping(Base):
     __tablename__ = "shipping"
 
@@ -111,6 +133,7 @@ class Shipping(Base):
     expedition_id = Column(Integer, ForeignKey("expedition.id"))
 
     expedition = relationship("Expedition", backref="shipping")
+
 
 class ShippingCollection(Base):
     __tablename__ = "shipping_collection"
@@ -122,6 +145,7 @@ class ShippingCollection(Base):
 
     shipping = relationship("Shipping", backref="shipping_collection")
 
+
 class GuardHarbor(Base):
     __tablename__ = "guard_harbor"
 
@@ -130,6 +154,7 @@ class GuardHarbor(Base):
     checkpoint_id = Column(Integer, ForeignKey("checkpoint_data.id"))
 
     checkpoint = relationship("CheckpointData", backref="guard_harbor")
+
 
 class Collection(Base):
     __tablename__ = "collection"
@@ -141,6 +166,7 @@ class Collection(Base):
 
     centra = relationship("Centra", backref="collection")
 
+
 class Dry(Base):
     __tablename__ = "dry"
 
@@ -148,6 +174,7 @@ class Dry(Base):
     weight = Column(Float)
     start_time = Column(DateTime)
     exp_date = Column(Date)
+
 
 class Flour(Base):
     __tablename__ = "flour"
