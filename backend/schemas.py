@@ -96,10 +96,9 @@ class ShippingData(ShippingDataRecord):
 
 class CheckpointDataRecord(BaseModel):
 
-    package_id: str
+    package_id: int
     shipping_id: int
     total_received_package: int
-    total_sent_package: int
 
 
 class CheckpointData(CheckpointDataRecord):
