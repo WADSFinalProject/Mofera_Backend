@@ -96,7 +96,6 @@ class ShippingData(ShippingDataRecord):
 
 class CheckpointDataRecord(BaseModel):
 
-    id: int
     package_id: str
     shipping_id: int
     total_received_package: int
@@ -104,16 +103,9 @@ class CheckpointDataRecord(BaseModel):
 
 
 class CheckpointData(CheckpointDataRecord):
+
+    id: int
     arrival_date: date
-
-
-class CheckpointData(CheckpointDataRecord):
-
-    id: int
-    package_id: str
-    shipping_id: int
-    total_received_package: int
-    total_sent_package: int
 
     class Config:
         orm_mode = True
