@@ -14,8 +14,8 @@ import logging
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from pydantic import BaseModel
-from models import *
-from schemas import *
+import models
+import schemas
 import crud
 
 
@@ -40,3 +40,10 @@ def get_db():
 db_dependecy = Annotated[Session, Depends(get_db)]
 
 logger = logging.getLogger(__name__)
+
+@router.post("/add_checkpoint")
+def add_checkpoint_data(checkpoint: schemas.CheckpointDataRecord, db: db_dependecy):
+    db_checkpoint = crud.create_checkpoint(db=db, checkpoint=checkpoint)
+    db.add(db_checkpoint)
+    db.commit()
+    db.refresh()

@@ -14,8 +14,7 @@ import logging
 from sqlalchemy.exc import SQLAlchemyError
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from pydantic import BaseModel
-from models import *
-from schemas import *
+import schemas
 import crud
 
 
@@ -42,21 +41,21 @@ db_dependecy = Annotated[Session, Depends(get_db)]
 logger = logging.getLogger(__name__)
 
 @router.post("/new_wet_leaves")
-def add_wet_leaves(wet_leaves: WetLeavesRecord, db: db_dependecy):
+def add_wet_leaves(wet_leaves: schemas.WetLeavesRecord, db: db_dependecy):
     db_collection = crud.create_wet_leaves(db=db, wet_leaves=wet_leaves)
     db.add(db_collection)
     db.commit()
     db.refresh()
 
 @router.post("/new_dry_leaves")
-def add_wet_leaves(dry_leaves: DryLeavesRecord, db: db_dependecy):
+def add_wet_leaves(dry_leaves: schemas.DryLeavesRecord, db: db_dependecy):
     db_dry = crud.create_dry_leaves(db=db, dry_leaves=dry_leaves)
     db.add(db_dry)
     db.commit()
     db.refresh()
 
 @router.post("/new_flour")
-def add_wet_leaves(flour: FlourRecord, db: db_dependecy):
+def add_wet_leaves(flour: schemas.FlourRecord, db: db_dependecy):
     db_dry = crud.create_flour(db=db, flour=flour)
     db.add(db_dry)
     db.commit()
