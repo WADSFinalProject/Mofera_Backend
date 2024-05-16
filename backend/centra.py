@@ -47,3 +47,21 @@ def add_wet_leaves(wet_leaves: WetLeavesRecord, db: db_dependecy):
     db.add(db_collection)
     db.commit()
     db.refresh()
+
+@router.post("/new_dry_leaves")
+def add_wet_leaves(dry_leaves: DryLeavesRecord, db: db_dependecy):
+    db_dry = crud.create_dry_leaves(db=db, dry_leaves=dry_leaves)
+    db.add(db_dry)
+    db.commit()
+    db.refresh()
+
+@router.post("/new_flour")
+def add_wet_leaves(flour: FlourRecord, db: db_dependecy):
+    db_dry = crud.create_flour(db=db, flour=flour)
+    db.add(db_dry)
+    db.commit()
+    db.refresh()
+
+#TODO: Create function that validates the centra role
+def validate_user():
+    pass

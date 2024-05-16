@@ -38,14 +38,14 @@ def create_wet_leaves (db: Session, wet_leaves: WetLeavesRecord):
     db.refresh(db_wet_leaves)
     return db_wet_leaves
 
-def create_dry_leaves (db: Session, dry_leaves: DryLeavesExp):
+def create_dry_leaves (db: Session, dry_leaves: DryLeavesRecord):
     db_dry_leaves = DryLeaves(exp_date=dry_leaves.exp_date, weight=dry_leaves.weight)
     db.add(db_dry_leaves)
     db.commit()
     db.refresh(db_dry_leaves)
     return db_dry_leaves
 
-def create_flour (db: Session, flour: FlourExp):
+def create_flour (db: Session, flour: FlourRecord):
     db_flour = Flour(finish_time=flour.finish_time, weight=flour.weight)
     db.add(db_flour)
     db.commit()

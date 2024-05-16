@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import date
 
+
 class CreateUserRequest(BaseModel):
 
     username: str
@@ -18,14 +19,17 @@ class VerificationEmailRequest(BaseModel):
     email: str
     verification_link: str
 
+
 class WetLeavesBase(BaseModel):
     weight: float
+
 
 class WetLeavesRecord(WetLeavesBase):
     retrieval_date: date
 
+
 class WetLeaves(WetLeavesBase):
-    
+
     id: int
     retrieval_date: date
     centra_id: int
@@ -33,55 +37,63 @@ class WetLeaves(WetLeavesBase):
     class Config:
         orm_mode = True
 
+
 class DryLeavesBase(BaseModel):
 
-    id: int
     weight: float
 
-class DryLeavesExp(DryLeavesBase):
-    exp_date: date
-    
-class DryLeaves(DryLeavesBase):
-        
-    id: int
+
+class DryLeavesRecord(DryLeavesBase):
     exp_date: date
 
+
+class DryLeaves(DryLeavesBase):
+
+    id: int
+    exp_date: date
 
     class Config:
         orm_mode = True
 
-class FlourBase(BaseModel):
-    
-        id: int
-        weight: float
 
-class FlourExp(FlourBase):
+class FlourBase(BaseModel):
+
+    weight: float
+
+
+class FlourRecord(FlourBase):
     finish_time: date
 
+
 class Flour(FlourBase):
-        
-        id: int
-        finish_time: date
-    
-        class Config:
-            orm_mode = True
+
+    id: int
+    finish_time: date
+
+    class Config:
+        orm_mode = True
+
 
 class ShippingDataRecord(BaseModel):
-         
-        id: int
-        expedition_id: int
+
+    id: int
+    expedition_id: int
+
 
 class ShippingDepature(ShippingDataRecord):
-        departure_date: date
+    departure_date: date
+
 
 class ShippingData(ShippingDataRecord):
-            
-            id: int
-            expedition_id: int
-    
-            class Config:
-                orm_mode = True
+
+    id: int
+    expedition_id: int
+
+    class Config:
+        orm_mode = True
 # Checkpoint
+
+
 class CheckpointDataRecord(BaseModel):
 
     id: int
@@ -90,16 +102,18 @@ class CheckpointDataRecord(BaseModel):
     total_received_package: int
     total_sent_package: int
 
-class CheckpointData(CheckpointDataRecord):
-     arrival_date: date
 
 class CheckpointData(CheckpointDataRecord):
-        
-        id: int
-        package_id: str
-        shipping_id: int
-        total_received_package: int
-        total_sent_package: int
-    
-        class Config:
-            orm_mode = True
+    arrival_date: date
+
+
+class CheckpointData(CheckpointDataRecord):
+
+    id: int
+    package_id: str
+    shipping_id: int
+    total_received_package: int
+    total_sent_package: int
+
+    class Config:
+        orm_mode = True
