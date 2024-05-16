@@ -78,9 +78,11 @@ class CheckpointData(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     arrival_date = Column(Date)
-    collection_id = Column(Integer, ForeignKey("shipping_collection.id"))
+    total_weight = Column(Float)
+    total_packages = Column(Integer)
+    shipping_id = Column(Integer, ForeignKey("shipping.id"))
 
-    collection = relationship("ShippingCollection", backref="checkpoint_data")
+    shipping = relationship("Shipping", backref="shipping_collection")
 
 
 class Expedition(Base):
@@ -131,19 +133,10 @@ class Shipping(Base):
     id = Column(Integer, primary_key=True, index=True)
     departure_date = Column(Date)
     expedition_id = Column(Integer, ForeignKey("expedition.id"))
+    guard_harbor_dest_id = Column(Integer, ForeignKey("guard_harbor.id"))
 
     expedition = relationship("Expedition", backref="shipping")
-
-
-class ShippingCollection(Base):
-    __tablename__ = "shipping_collection"
-
-    id = Column(Integer, primary_key=True, index=True)
-    total_weight = Column(Float)
-    total_package = Column(Integer)
-    shipping_id = Column(Integer, ForeignKey("shipping.id"))
-
-    shipping = relationship("Shipping", backref="shipping_collection")
+    guard_harbor = relationship("GuardHarbor", backref="shipping")
 
 
 class GuardHarbor(Base):
