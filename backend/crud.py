@@ -6,9 +6,9 @@ def get_wet_leaves_by_id(db: Session, wet_leaves_id: int):
     return db.query(models.Collection).filter(models.Collection.id == wet_leaves_id).first()
 
 def get_dry_leaves_by_id(db: Session, dry_leaves_id: int):
-    return db.query(schemas.DryLeaves).filter(schemas.DryLeaves.id == dry_leaves_id).first()
+    return db.query(models.DryLeaves).filter(models.DryLeaves.id == dry_leaves_id).first()
 def get_flour_by_id(db: Session, flour_id: int):
-    return db.query(schemas.Flour).filter(schemas.Flour.id == flour_id).first()
+    return db.query(models.Flour).filter(models.Flour.id == flour_id).first()
 
 def get_shipping_by_id(db: Session, shipping_id: int):
     return db.query(models.Shipping).filter(models.Shipping.id == shipping_id).first()
@@ -23,7 +23,7 @@ def get_wet_leaves(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Collection).offset(skip).limit(limit).all()
 
 def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(schemas.DryLeaves).offset(skip).limit(limit).all()
+    return db.query(models.DryLeaves).offset(skip).limit(limit).all()
 
 def get_flour(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Flour).offset(skip).limit(limit).all()
@@ -39,7 +39,7 @@ def create_wet_leaves (db: Session, wet_leaves: schemas.WetLeavesRecord):
     return db_wet_leaves
 
 def create_dry_leaves (db: Session, dry_leaves: schemas.DryLeavesRecord):
-    db_dry_leaves = schemas.DryLeaves(exp_date=dry_leaves.exp_date, weight=dry_leaves.weight)
+    db_dry_leaves = models.DryLeaves(exp_date=dry_leaves.exp_date, weight=dry_leaves.weight)
     db.add(db_dry_leaves)
     db.commit()
     db.refresh(db_dry_leaves)
