@@ -174,3 +174,21 @@ class Flour(Base):
     id = Column(Integer, primary_key=True, index=True)
     weight = Column(Float)
     finish_time = Column(Date)
+
+class CentraNotification(Base):
+    __tablename__ = "centra_notification"
+
+    id = Column(Integer, primary_key=True, index=True)
+    message = Column(Integer)
+    user_id = Column(Integer, ForeignKey("users.id"))
+
+    user = relationship("Users", backref="centra_notification")
+
+class GuardHarborNotification(Base):
+    __tablename__ = "guard_harbor_notification"
+
+    id = Column(Integer, primary_key=True, index=True)
+    message = Column(Integer)
+    user_id = Column(Integer, ForeignKey("users.id"))
+
+    user = relationship("Users", backref="guard_harbor_notification")
