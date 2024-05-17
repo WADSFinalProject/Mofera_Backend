@@ -24,7 +24,7 @@ class Users(Base):
 
     refresh_tokens = relationship(
         "RefreshToken", back_populates="users", order_by="RefreshToken.expires_at.desc()")
-    role = relationship("Roles", back_populates="users")
+    roles = relationship("Roles", backref="users")
 
 
 class Roles(Base):
@@ -42,7 +42,7 @@ class RefreshToken(Base):
     user_id = Column(Integer, ForeignKey('users.id'))
     expires_at = Column(DateTime)
 
-    user = relationship("Users", back_populates="refresh_tokens")
+    users = relationship("Users", back_populates="refresh_tokens")
 
 # Centra, etc
 
@@ -67,10 +67,10 @@ class Centra(Base):
     package_data_id = Column(Integer, ForeignKey("package_data.id"))
     reception_package_id = Column(Integer, ForeignKey("reception_package.id"))
 
-    collection_centra = relationship("Collection", backref="centra")
-    package_data_centra = relationship("PackageData", backref="centra")
+    collection_centra = relationship("Collection", backref="centra", foreign_keys=[collection_id])
+    package_data_centra = relationship("PackageData", backref="centra", foreign_keys=[package_data_id])
     reception_package_centra = relationship(
-        "ReceptionPackage", backref="centra")
+        "ReceptionPackage", backref="centra", foreign_keys=[reception_package_id])
 
 
 class CheckpointData(Base):
@@ -100,7 +100,7 @@ class PackageData(Base):
     centra_id = Column(Integer, ForeignKey("centra.id"))
     weight = Column(Float)
 
-    centra_owner = relationship("Centra", backref="package_data")
+    centra_owner = relationship("Centra", backref="package_data", foreign_keys=[centra_id])
 
 
 class RescaledPackageData(Base):
@@ -123,8 +123,8 @@ class ReceptionPackage(Base):
     receival_date = Column(Date)
     centra_id = Column(Integer, ForeignKey("centra.id"))
 
-    source_centra = relationship("Centra", backref="reception_package")
-    original_package = relationship("PackageData", backref="reception_package")
+    source_centra = relationship("Centra", backref="reception_package", foreign_keys=[centra_id])
+    original_package = relationship("PackageData", backref="reception_package", foreign_keys=[package_id])
 
 
 class Shipping(Base):
@@ -156,8 +156,6 @@ class Collection(Base):
     retrieval_date = Column(Date)
     weight = Column(Float)
     centra_id = Column(Integer, ForeignKey("centra.id"))
-
-    centra = relationship("Centra", backref="collection")
 
 
 class Dry(Base):

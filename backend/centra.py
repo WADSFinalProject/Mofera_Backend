@@ -43,23 +43,29 @@ logger = logging.getLogger(__name__)
 @router.post("/new_wet_leaves")
 def add_wet_leaves(wet_leaves: schemas.WetLeavesRecord, db: db_dependecy):
     db_collection = crud.create_wet_leaves(db=db, wet_leaves=wet_leaves)
-    db.add(db_collection)
-    db.commit()
-    db.refresh()
 
 @router.post("/new_dry_leaves")
 def add_wet_leaves(dry_leaves: schemas.DryLeavesRecord, db: db_dependecy):
     db_dry = crud.create_dry_leaves(db=db, dry_leaves=dry_leaves)
-    db.add(db_dry)
-    db.commit()
-    db.refresh()
 
 @router.post("/new_flour")
 def add_wet_leaves(flour: schemas.FlourRecord, db: db_dependecy):
     db_dry = crud.create_flour(db=db, flour=flour)
-    db.add(db_dry)
-    db.commit()
-    db.refresh()
+
+@router.get("/wet_leaves")
+def get_wet_leaves(db: db_dependecy):
+    db_wet_leaves = crud.get_wet_leaves(db=db)
+    return db_wet_leaves
+
+@router.get("/dry_leaves")
+def get_dry_leaves(db: db_dependecy):
+    db_dry_leaves = crud.get_dry_leaves(db=db)
+    return db_dry_leaves
+
+@router.get("/flour")
+def get_flour(db: db_dependecy):
+    db_flour = crud.get_flour(db=db)
+    return db_flour
 
 #TODO: Create function that validates the centra role
 def validate_user():

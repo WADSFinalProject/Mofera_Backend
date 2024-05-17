@@ -2,6 +2,7 @@
 
 import models
 import auth
+import centra
 from fastapi import FastAPI, Depends, HTTPException, APIRouter, Request, status
 
 from sqlalchemy.orm import Session
@@ -40,6 +41,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 
 app.include_router(auth.router)
+app.include_router(centra.router)
 
 
 origins = [
