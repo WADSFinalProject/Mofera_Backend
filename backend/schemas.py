@@ -125,3 +125,36 @@ class centraNotificationData(centraNotification):
 
     class Config:
         orm_mode = True
+
+class guardHarborNotification(BaseModel):
+
+    id: int
+    user_id: int
+
+class guardHarborNotificationMsg(guardHarborNotification):
+    msg: str
+
+class guardHarborNotificationData(guardHarborNotification):
+    
+        id: int
+        user_id: int
+    
+        class Config:
+            orm_mode = True
+            
+class ReceptionPackageBase(BaseModel):
+    package_id: str
+    total_packages_received: int
+    weight: float
+    centra_id: int
+
+class ReceptionPackageReceival(ReceptionPackageBase):
+    receival_date: date
+
+class ReceptionPackages(ReceptionPackageBase):
+    id:int
+    package_id: str
+    centra_id: int
+
+    class Config:
+        orm_mode = True
