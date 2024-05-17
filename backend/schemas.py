@@ -1,3 +1,5 @@
+from typing import Optional
+
 from pydantic import BaseModel
 from datetime import date
 
@@ -95,17 +97,21 @@ class ShippingData(ShippingDataRecord):
 # Checkpoint
 
 
-class CheckpointDataRecord(BaseModel):
+class CheckpointDataBase(BaseModel):
 
-    package_id: int
     shipping_id: int
-    total_received_package: int
+    total_packages: int
+
+class CheckpointDataRecord(CheckpointDataBase):
+
+    arrival_date: date
+    note : Optional[str] = None
 
 
 class CheckpointData(CheckpointDataRecord):
 
     id: int
-    arrival_date: date
+    
 
     class Config:
         orm_mode = True

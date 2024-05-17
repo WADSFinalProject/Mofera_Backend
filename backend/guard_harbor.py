@@ -46,4 +46,4 @@ def add_checkpoint_data(checkpoint: schemas.CheckpointDataRecord, db: db_depende
     db_checkpoint = crud.create_checkpoint(db=db, checkpoint=checkpoint)
     db.add(db_checkpoint)
     db.commit()
-    db.refresh()
+    db.refresh(db_checkpoint)

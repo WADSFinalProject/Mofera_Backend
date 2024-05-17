@@ -71,7 +71,7 @@ def create_shipping (db: Session, shipping: schemas.ShippingDepature):
     db.refresh(db_shipping)
     return db_shipping
 
-def create_checkpoint (db: Session, checkpoint: schemas.CheckpointData):
+def create_checkpoint (db: Session, checkpoint: schemas.CheckpointDataRecord):
     db_checkpoint = models.CheckpointData(**checkpoint.dict())
     db.add(db_checkpoint)
     db.commit()

@@ -78,9 +78,9 @@ class CheckpointData(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     arrival_date = Column(Date)
-    total_weight = Column(Float)
     total_packages = Column(Integer)
     shipping_id = Column(Integer, ForeignKey("shipping.id"))
+    note = Column(String(length=500))
 
     shipping = relationship("Shipping", backref="shipping_collection")
 

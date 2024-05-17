@@ -3,6 +3,7 @@
 import models
 import auth
 import centra
+import guard_harbor
 from fastapi import FastAPI, Depends, HTTPException, APIRouter, Request, status
 
 from sqlalchemy.orm import Session
@@ -22,7 +23,6 @@ import logging
 logging.basicConfig(level=logging.INFO,
                     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 app = FastAPI()
-app.include_router(auth.router)
 
 router = APIRouter()
 
@@ -42,7 +42,7 @@ async def http_exception_handler(request: Request, exc: HTTPException):
 
 app.include_router(auth.router)
 app.include_router(centra.router)
-
+app.include_router(guard_harbor.router)
 
 origins = [
     "http://localhost:5173",
