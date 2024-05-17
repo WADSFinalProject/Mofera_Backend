@@ -16,6 +16,9 @@ def get_shipping_by_id(db: Session, shipping_id: int):
 def get_checkpoint_by_id(db: Session, checkpoint_id: int):
     return db.query(models.CheckpointData).filter(models.CheckpointData.id == checkpoint_id).first()
 
+def get_centra_notifications_id(db: Session, centra_notif_id: int):
+    return db.query(models.CentraNotification).filter(models.CentraNotification.id == centra_notif_id).first()
+
 def get_checkpoints(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.CheckpointData).offset(skip).limit(limit).all()
 
@@ -30,6 +33,9 @@ def get_flour(db: Session, skip: int = 0, limit: int = 10):
 
 def get_shipping(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Shipping).offset(skip).limit(limit).all()
+
+def get_centra_notifications(db: Session, skip: int = 0, limit: int = 10):
+    return db.query(models.CentraNotification).offset(skip).limit(limit).all()
 
 def create_wet_leaves (db: Session, wet_leaves: schemas.WetLeavesRecord):
     db_wet_leaves = models.Collection(retrieval_date=wet_leaves.retrieval_date, weight=wet_leaves.weight)
@@ -65,6 +71,13 @@ def create_checkpoint (db: Session, checkpoint: schemas.CheckpointData):
     db.commit()
     db.refresh(db_checkpoint)
     return db_checkpoint
+
+def create_centra_notifications (db: Session, centra_notif: schemas.CentraNotification):
+    db_centra_notif = models.CentraNotification(message=centra_notif.message, user_id=centra_notif.user_id)
+    db.add(db_centra_notif)
+    db.commit()
+    db.refresh(db_centra_notif)
+    return db_centra_notif
 
 def update_wet_leaves(db: Session, wet_leaves_id: int, wet_leaves: schemas.WetLeavesBase):
     db_wet_leaves = get_wet_leaves_by_id(db, wet_leaves_id)
@@ -111,6 +124,15 @@ def update_checkpoint(db: Session, checkpoint_id: int, checkpoint: schemas.Check
         db.refresh(db_checkpoint)
     return db_checkpoint
 
+def update_centra_notifications(db: Session, centra_notif_id: int, centra_notif: schemas.CentraNotification):
+    db_centra_notif = get_centra_notifications_id(db, centra_notif_id)
+    if db_centra_notif:
+        for key, value in centra_notif.dict().items():
+            setattr(db_centra_notif, key, value)
+        db.commit()
+        db.refresh(db_centra_notif)
+    return db_centra_notif
+
 def delete_wet_leaves(db: Session, wet_leaves_id: int):
     db_wet_leaves = get_wet_leaves_by_id(db, wet_leaves_id)
     if db_wet_leaves:
@@ -145,6 +167,13 @@ def delete_checkpoint(db: Session, checkpoint_id: int):
         db.delete(db_checkpoint)
         db.commit()
     return db_checkpoint
+
+def delete_centra_notifications(db: Session, centra_notif_id: int):
+    db_centra_notif = get_centra_notifications_id(db, centra_notif_id)
+    if db_centra_notif:
+        db.delete(db_centra_notif)
+        db.commit()
+    return db_centra_notif
 
 
 

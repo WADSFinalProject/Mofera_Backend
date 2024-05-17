@@ -109,3 +109,19 @@ class CheckpointData(CheckpointDataRecord):
 
     class Config:
         orm_mode = True
+
+class centraNotification(BaseModel):
+
+    id: int
+    user_id: int
+
+class centraNotificationMsg(centraNotification):
+    msg: str
+
+class centraNotificationData(centraNotification):
+
+    id: int
+    user_id: int
+
+    class Config:
+        orm_mode = True
