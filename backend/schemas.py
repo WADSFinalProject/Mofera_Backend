@@ -26,6 +26,7 @@ class WetLeavesBase(BaseModel):
 
 class WetLeavesRecord(WetLeavesBase):
     retrieval_date: date
+    centra_id: int
 
 
 class WetLeaves(WetLeavesBase):
