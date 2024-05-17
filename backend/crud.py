@@ -29,7 +29,7 @@ def get_wet_leaves(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Collection).offset(skip).limit(limit).all()
 
 def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10):
-    return db.query(models.DryLeaves).offset(skip).limit(limit).all()
+    return db.query(models.Dry).offset(skip).limit(limit).all()
 
 def get_flour(db: Session, skip: int = 0, limit: int = 10):
     return db.query(models.Flour).offset(skip).limit(limit).all()
@@ -51,7 +51,7 @@ def create_wet_leaves (db: Session, wet_leaves: schemas.WetLeavesRecord):
     return db_wet_leaves
 
 def create_dry_leaves (db: Session, dry_leaves: schemas.DryLeavesRecord):
-    db_dry_leaves = models.DryLeaves(exp_date=dry_leaves.exp_date, weight=dry_leaves.weight)
+    db_dry_leaves = models.Dry(exp_date=dry_leaves.exp_date, weight=dry_leaves.weight)
     db.add(db_dry_leaves)
     db.commit()
     db.refresh(db_dry_leaves)
@@ -78,19 +78,19 @@ def create_checkpoint (db: Session, checkpoint: schemas.CheckpointData):
     db.refresh(db_checkpoint)
     return db_checkpoint
 
-def create_centra_notifications (db: Session, centra_notif: schemas.CentraNotification):
-    db_centra_notif = models.CentraNotification(message=centra_notif.message, user_id=centra_notif.user_id)
-    db.add(db_centra_notif)
-    db.commit()
-    db.refresh(db_centra_notif)
-    return db_centra_notif
+# def create_centra_notifications (db: Session, centra_notif: schemas.CentraNotification):
+#     db_centra_notif = models.CentraNotification(message=centra_notif.message, user_id=centra_notif.user_id)
+#     db.add(db_centra_notif)
+#     db.commit()
+#     db.refresh(db_centra_notif)
+#     return db_centra_notif
 
-def create_reception_packages (db: Session, reception_packages: schemas.ReceptionPackage):
-    db_reception_packages = models.ReceptionPackage(**reception_packages.dict())
-    db.add(db_reception_packages)
-    db.commit()
-    db.refresh(db_reception_packages)
-    return db_reception_packages
+# def create_reception_packages (db: Session, reception_packages: schemas.ReceptionPackage):
+#     db_reception_packages = models.ReceptionPackage(**reception_packages.dict())
+#     db.add(db_reception_packages)
+#     db.commit()
+#     db.refresh(db_reception_packages)
+#     return db_reception_packages
 
 def update_wet_leaves(db: Session, wet_leaves_id: int, wet_leaves: schemas.WetLeavesBase):
     db_wet_leaves = get_wet_leaves_by_id(db, wet_leaves_id)
@@ -137,23 +137,23 @@ def update_checkpoint(db: Session, checkpoint_id: int, checkpoint: schemas.Check
         db.refresh(db_checkpoint)
     return db_checkpoint
 
-def update_centra_notifications(db: Session, centra_notif_id: int, centra_notif: schemas.CentraNotification):
-    db_centra_notif = get_centra_notifications_id(db, centra_notif_id)
-    if db_centra_notif:
-        for key, value in centra_notif.dict().items():
-            setattr(db_centra_notif, key, value)
-        db.commit()
-        db.refresh(db_centra_notif)
-    return db_centra_notif
+# def update_centra_notifications(db: Session, centra_notif_id: int, centra_notif: schemas.CentraNotification):
+#     db_centra_notif = get_centra_notifications_id(db, centra_notif_id)
+#     if db_centra_notif:
+#         for key, value in centra_notif.dict().items():
+#             setattr(db_centra_notif, key, value)
+#         db.commit()
+#         db.refresh(db_centra_notif)
+#     return db_centra_notif
 
-def update_reception_packages(db: Session, reception_packages_id: int, reception_packages: schemas.ReceptionPackage):
-    db_reception_packages = get_reception_packages_by_id(db, reception_packages_id)
-    if db_reception_packages:
-        for key, value in reception_packages.dict().items():
-            setattr(db_reception_packages, key, value)
-        db.commit()
-        db.refresh(db_reception_packages)
-    return db_reception_packages
+# def update_reception_packages(db: Session, reception_packages_id: int, reception_packages: schemas.ReceptionPackage):
+#     db_reception_packages = get_reception_packages_by_id(db, reception_packages_id)
+#     if db_reception_packages:
+#         for key, value in reception_packages.dict().items():
+#             setattr(db_reception_packages, key, value)
+#         db.commit()
+#         db.refresh(db_reception_packages)
+#     return db_reception_packages
 
 def delete_wet_leaves(db: Session, wet_leaves_id: int):
     db_wet_leaves = get_wet_leaves_by_id(db, wet_leaves_id)

@@ -65,12 +65,12 @@ class Centra(Base):
     location = Column(String)
     collection_id = Column(Integer, ForeignKey("collection.id"))
     package_data_id = Column(Integer, ForeignKey("package_data.id"))
-    reception_package_id = Column(Integer, ForeignKey("reception_package.id"))
+    # reception_package_id = Column(Integer, ForeignKey("reception_package.id"))
 
     collection_centra = relationship("Collection", backref="centra", foreign_keys=[collection_id])
     package_data_centra = relationship("PackageData", backref="centra", foreign_keys=[package_data_id])
-    reception_package_centra = relationship(
-        "ReceptionPackage", backref="centra", foreign_keys=[reception_package_id])
+    # reception_package_centra = relationship(
+    #     "ReceptionPackage", backref="centra", foreign_keys=[reception_package_id])
 
 
 class CheckpointData(Base):
@@ -198,7 +198,7 @@ class ReceptionPackage(Base):
     total_packages_received = Column(Integer)
     weight = Column(Float)
     receival_date = Column(Date)
-    centra_id = Column(Integer, ForeignKey("users.id"))
+    centra_id = Column(Integer, ForeignKey("centra.id"))
 
-    centra = relationship("User", backref="reception_packages", foreign_keys=[centra_id])
+    centra = relationship("Centra", backref="reception_packages", foreign_keys=[centra_id])
     package = relationship("PackageData", backref="reception_packages", foreign_keys=[package_id])
