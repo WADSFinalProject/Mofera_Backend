@@ -4,6 +4,7 @@ import models
 import auth
 import centra
 import guard_harbor
+import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, APIRouter, Request, status
 
 from sqlalchemy.orm import Session
@@ -81,3 +82,6 @@ async def user(user: None, db: db_dependency):
     if user is None:
         raise HTTPException(status_code=401, detail="Authentication Failed")
     return {"User": user}
+
+if __name__ == '__main__':
+    uvicorn.run("main:app", host = "0.0.0.0", reload=True)
