@@ -3,12 +3,13 @@ from sqlalchemy import and_, or_
 import models
 import schemas
 from datetime import date
+from fastapi import HTTPException
 
 def get_wet_leaves_by_id(db: Session, wet_leaves_id: int):
     return db.query(models.Collection).filter(models.Collection.id == wet_leaves_id).first()
 
 def get_dry_leaves_by_id(db: Session, dry_leaves_id: int):
-    return db.query(models.DryLeaves).filter(models.DryLeaves.id == dry_leaves_id).first()
+    return db.query(models.Dry).filter(models.Dry.id == dry_leaves_id).first()
 
 def get_flour_by_id(db: Session, flour_id: int):
     return db.query(models.Flour).filter(models.Flour.id == flour_id).first()
@@ -36,6 +37,14 @@ def get_checkpoints(db: Session, skip: int = 0, limit: int = 10, date_filter: da
             query = query.filter(models.CheckpointData.arrival_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
+def update_checkpoint(db: Session, checkpoint_id: int, checkpoint: schemas.CheckpointDataRecord):
+    query = db.query(models.CheckpointData).filter(models.CheckpointData.id == checkpoint_id)
+    if not query:
+        raise HTTPException(status_code=404, detail="Checkpoint not found")
+    query.update(**checkpoint.dict())
+    return query
+
+
 def get_wet_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Collection)
     if date_filter:
@@ -48,14 +57,14 @@ def get_wet_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
     return query.offset(skip).limit(limit).all()
 
 def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
-    query = db.query(models.DryLeaves)
+    query = db.query(models.Dry)
     if date_filter:
         if before:
-            query = query.filter(models.DryLeaves.exp_date < date_filter)
+            query = query.filter(models.Dry.exp_date < date_filter)
         elif after:
-            query = query.filter(models.DryLeaves.exp_date > date_filter)
+            query = query.filter(models.Dry.exp_date > date_filter)
         else:
-            query = query.filter(models.DryLeaves.exp_date == date_filter)
+            query = query.filter(models.Dry.exp_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
 def get_flour(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):

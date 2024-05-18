@@ -18,6 +18,8 @@ import models
 import schemas
 import crud
 
+from auth import role_access, get_db
+from roles_enum import RoleEnum
 
 router = APIRouter(
     prefix="/guard_harbor",
@@ -41,9 +43,26 @@ db_dependecy = Annotated[Session, Depends(get_db)]
 
 logger = logging.getLogger(__name__)
 
-@router.post("/add_checkpoint")
+@router.post("/add_checkpoint", dependencies=[Depends(role_access(RoleEnum.guard_harbor))])
 def add_checkpoint_data(checkpoint: schemas.CheckpointDataRecord, db: db_dependecy):
     db_checkpoint = crud.create_checkpoint(db=db, checkpoint=checkpoint)
     db.add(db_checkpoint)
     db.commit()
     db.refresh(db_checkpoint)
+    return JSONResponse(content={"detail": "checkpoint record added successfully"}, status_code=status.HTTP_201_CREATED)
+
+@router.post("/update_checkpoint", dependencies=[Depends(role_access(RoleEnum.guard_harbor))])
+def update_checkpoint_data(checkpoint_id: int, checkpoint: schemas.CheckpointDataRecord, db: db_dependecy):
+    db_checkpoint = crud.update_checkpoint(db=db, checkpoint_id=checkpoint_id, checkpoint=checkpoint )
+    if not db_checkpoint:
+        raise HTTPException(status_code=404, detail="Checkpoint not found")
+    db.commit()
+    db.refresh(db_checkpoint)
+    return JSONResponse(content={"detail": "Checkpoint data updated successfully"}, status_code=status.HTTP_200_OK)
+#delete checkpoint endpoint
+@router.post("/delete_checkpoint", dependencies=[Depends(role_access(RoleEnum.guard_harbor))])
+def delete_checkpoint_data(checkpoint_id: int, db: db_dependecy):
+    db_checkpoint = crud.delete_checkpoint(db=db, checkpoint_id=checkpoint_id)
+    if not db_checkpoint:
+        raise HTTPException(status_code=404, detail="Checkpoint not found")
+    return JSONResponse(content={"detail": "Checkpoint data deleted successfully"}, status_code=status.HTTP_200_OK)

@@ -1,6 +1,7 @@
 from database import Base
 from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, func, DateTime, Boolean,  Enum as SQLEnum, Enum
 from sqlalchemy.orm import relationship
+from roles_enum import RoleEnum
 
 # Autn, admin, user
 
@@ -20,18 +21,10 @@ class Users(Base):
     username = Column(String(length=500))
     email = Column(String(length=500), unique=True)
     hashed_password = Column(String(length=500))
-    role_id = Column(Integer, ForeignKey("roles.id"))
+    role = Column(SQLEnum(RoleEnum), default=RoleEnum.centra, nullable=False)
 
     refresh_tokens = relationship(
         "RefreshToken", back_populates="users", order_by="RefreshToken.expires_at.desc()")
-    roles = relationship("Roles", backref="users")
-
-
-class Roles(Base):
-    __tablename__ = "roles"
-
-    id = Column(Integer, primary_key=True)
-    role = Column(String(length=500), unique=True)
 
 
 class RefreshToken(Base):
@@ -163,7 +156,7 @@ class Dry(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     weight = Column(Float)
-    exp_date = Column(Date)
+    dried_date = Column(Date)
 
 
 class Flour(Base):
@@ -171,13 +164,14 @@ class Flour(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     weight = Column(Float)
-    finish_time = Column(Date)
+    floured_date = Column(Date)
 
 class CentraNotification(Base):
     __tablename__ = "centra_notification"
 
     id = Column(Integer, primary_key=True, index=True)
     message = Column(Integer)
+    date = Column(Date)
     user_id = Column(Integer, ForeignKey("users.id"))
 
     user = relationship("Users", backref="centra_notification")
