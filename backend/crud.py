@@ -42,6 +42,8 @@ def update_checkpoint(db: Session, checkpoint_id: int, checkpoint: schemas.Check
     if not query:
         raise HTTPException(status_code=404, detail="Checkpoint not found")
     query.update(**checkpoint.dict())
+    db.commit()
+    db.refresh(query)
     return query
 
 
@@ -153,7 +155,7 @@ def create_centra_notifications(db: Session, centra_notif: schemas.CentraNotific
     db.refresh(db_centra_notif)
     return db_centra_notif
 
-def create_reception_packages(db: Session, reception_packages: schemas.ReceptionPackage):
+def create_reception_packages(db: Session, reception_packages: schemas.ReceptionPackageRecord):
     db_reception_packages = models.ReceptionPackage(**reception_packages.dict())
     db.add(db_reception_packages)
     db.commit()
@@ -198,11 +200,12 @@ def update_shipping(db: Session, shipping_id: int, shipping: schemas.ShippingDat
 
 def update_checkpoint(db: Session, checkpoint_id: int, checkpoint: schemas.CheckpointDataRecord):
     db_checkpoint = get_checkpoint_by_id(db, checkpoint_id)
-    if db_checkpoint:
-        for key, value in checkpoint.dict().items():
-            setattr(db_checkpoint, key, value)
-        db.commit()
-        db.refresh(db_checkpoint)
+    if not db_checkpoint:
+        raise HTTPException(status_code=404, detail="Checkpoint not found")
+    for key, value in checkpoint.dict().items():
+        setattr(db_checkpoint, key, value)
+    db.commit()
+    db.refresh(db_checkpoint)
     return db_checkpoint
 
 def update_centra_notifications(db: Session, centra_notif_id: int, centra_notif: schemas.CentraNotification):
@@ -253,9 +256,10 @@ def delete_shipping(db: Session, shipping_id: int):
 
 def delete_checkpoint(db: Session, checkpoint_id: int):
     db_checkpoint = get_checkpoint_by_id(db, checkpoint_id)
-    if db_checkpoint:
-        db.delete(db_checkpoint)
-        db.commit()
+    if not db_checkpoint:
+        raise HTTPException(status_code=404, detail="Checkpoint not found")
+    db.delete(db_checkpoint)
+    db.commit()
     return db_checkpoint
 
 def delete_centra_notifications(db: Session, centra_notif_id: int):

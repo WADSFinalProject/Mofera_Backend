@@ -153,14 +153,17 @@ class ReceptionPackageBase(BaseModel):
     total_packages_received: int
     weight: float
     centra_id: int
-
-class ReceptionPackageReceival(ReceptionPackageBase):
     receival_date: date
+
+class ReceptionPackageRecord(ReceptionPackageBase):
+    pass
+    
 
 class ReceptionPackages(ReceptionPackageBase):
     id:int
-    package_id: str
-    centra_id: int
 
     class Config:
         orm_mode = True
+
+class ReceptionPackageReceival(ReceptionPackageBase):
+    receival_date: date

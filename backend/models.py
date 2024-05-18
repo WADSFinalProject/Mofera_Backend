@@ -89,7 +89,6 @@ class PackageData(Base):
     __tablename__ = "package_data"
 
     id = Column(Integer, primary_key=True, index=True)
-    shipping_collection_id = Column(Integer)
     centra_id = Column(Integer, ForeignKey("centra.id"))
     weight = Column(Float)
 
@@ -188,7 +187,7 @@ class GuardHarborNotification(Base):
 class ReceptionPackage(Base):
     __tablename__ = 'reception_packages'
     id = Column(Integer, primary_key=True, index=True)
-    package_id = Column(String, ForeignKey("package_data.id"))
+    package_id = Column(Integer, ForeignKey("package_data.id"))
     total_packages_received = Column(Integer)
     weight = Column(Float)
     receival_date = Column(Date)
