@@ -47,13 +47,13 @@ class DryLeavesBase(BaseModel):
 
 
 class DryLeavesRecord(DryLeavesBase):
-    exp_date: date
+    dried_date: date
 
 
 class DryLeaves(DryLeavesBase):
 
     id: int
-    exp_date: date
+    dried_date: date
 
     class Config:
         orm_mode = True
@@ -65,13 +65,13 @@ class FlourBase(BaseModel):
 
 
 class FlourRecord(FlourBase):
-    finish_time: date
+    floured_date: date
 
 
 class Flour(FlourBase):
 
     id: int
-    finish_time: date
+    floured_date: date
 
     class Config:
         orm_mode = True
@@ -116,15 +116,15 @@ class CheckpointData(CheckpointDataRecord):
     class Config:
         orm_mode = True
 
-class centraNotification(BaseModel):
+class CentraNotification(BaseModel):
 
     id: int
     user_id: int
 
-class centraNotificationMsg(centraNotification):
+class CentraNotificationMsg(CentraNotification):
     msg: str
 
-class centraNotificationData(centraNotification):
+class CentraNotificationData(CentraNotification):
 
     id: int
     user_id: int
@@ -132,15 +132,15 @@ class centraNotificationData(centraNotification):
     class Config:
         orm_mode = True
 
-class guardHarborNotification(BaseModel):
+class GuardHarborNotification(BaseModel):
 
     id: int
     user_id: int
 
-class guardHarborNotificationMsg(guardHarborNotification):
+class GuardHarborNotificationMsg(GuardHarborNotification):
     msg: str
 
-class guardHarborNotificationData(guardHarborNotification):
+class GuardHarborNotificationData(GuardHarborNotification):
     
         id: int
         user_id: int
@@ -159,7 +159,7 @@ class ReceptionPackageRecord(ReceptionPackageBase):
     pass
     
 
-class ReceptionPackages(ReceptionPackageBase):
+class ReceptionPackage(ReceptionPackageBase):
     id:int
 
     class Config:

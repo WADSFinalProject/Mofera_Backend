@@ -49,12 +49,12 @@ def add_wet_leaves(wet_leaves: schemas.WetLeavesRecord, db: db_dependecy):
     return JSONResponse(content={"detail": "Wet leaves record added successfully"}, status_code=status.HTTP_201_CREATED)
 
 @router.post("/new_dry_leaves", dependencies=[Depends(role_access(RoleEnum.centra))])
-def add_wet_leaves(dry_leaves: schemas.DryLeavesRecord, db: db_dependecy):
+def add_dry_leaves(dry_leaves: schemas.DryLeavesRecord, db: db_dependecy):
     db_dry = crud.create_dry_leaves(db=db, dry_leaves=dry_leaves)
     return JSONResponse(content={"detail": "Dry leaves record added successfully"}, status_code=status.HTTP_201_CREATED)
 
 @router.post("/new_flour", dependencies=[Depends(role_access(RoleEnum.centra))])
-def add_wet_leaves(flour: schemas.FlourRecord, db: db_dependecy):
+def add_flour(flour: schemas.FlourRecord, db: db_dependecy):
     db_flour = crud.create_flour(db=db, flour=flour)
     return JSONResponse(content={"detail": "Flour record added successfully"}, status_code=status.HTTP_201_CREATED)
 

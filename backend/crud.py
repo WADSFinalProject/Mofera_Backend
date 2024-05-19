@@ -41,7 +41,7 @@ def update_checkpoint(db: Session, checkpoint_id: int, checkpoint: schemas.Check
     query = db.query(models.CheckpointData).filter(models.CheckpointData.id == checkpoint_id)
     if not query:
         raise HTTPException(status_code=404, detail="Checkpoint not found")
-    query.update(**checkpoint.dict())
+    query.update(**checkpoint.model_dump())
     db.commit()
     db.refresh(query)
     return query
@@ -62,11 +62,11 @@ def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
     query = db.query(models.Dry)
     if date_filter:
         if before:
-            query = query.filter(models.Dry.exp_date < date_filter)
+            query = query.filter(models.Dry.dried_date < date_filter)
         elif after:
-            query = query.filter(models.Dry.exp_date > date_filter)
+            query = query.filter(models.Dry.dried_date > date_filter)
         else:
-            query = query.filter(models.Dry.exp_date == date_filter)
+            query = query.filter(models.Dry.dried_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
 def get_flour(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
@@ -121,14 +121,14 @@ def create_wet_leaves(db: Session, wet_leaves: schemas.WetLeavesRecord):
     return db_wet_leaves
 
 def create_dry_leaves(db: Session, dry_leaves: schemas.DryLeavesRecord):
-    db_dry_leaves = models.DryLeaves(exp_date=dry_leaves.exp_date, weight=dry_leaves.weight)
+    db_dry_leaves = models.Dry(dried_date=dry_leaves.dried_date, weight=dry_leaves.weight)
     db.add(db_dry_leaves)
     db.commit()
     db.refresh(db_dry_leaves)
     return db_dry_leaves
 
 def create_flour(db: Session, flour: schemas.FlourRecord):
-    db_flour = models.Flour(finish_time=flour.finish_time, weight=flour.weight)
+    db_flour = models.Flour(**flour.model_dump())
     db.add(db_flour)
     db.commit()
     db.refresh(db_flour)
@@ -142,7 +142,7 @@ def create_shipping(db: Session, shipping: schemas.ShippingDepature):
     return db_shipping
 
 def create_checkpoint(db: Session, checkpoint: schemas.CheckpointDataRecord):
-    db_checkpoint = models.CheckpointData(**checkpoint.dict())
+    db_checkpoint = models.CheckpointData(**checkpoint.model_dump())
     db.add(db_checkpoint)
     db.commit()
     db.refresh(db_checkpoint)
@@ -156,7 +156,7 @@ def create_centra_notifications(db: Session, centra_notif: schemas.CentraNotific
     return db_centra_notif
 
 def create_reception_packages(db: Session, reception_packages: schemas.ReceptionPackageRecord):
-    db_reception_packages = models.ReceptionPackage(**reception_packages.dict())
+    db_reception_packages = models.ReceptionPackage(**reception_packages.model_dump())
     db.add(db_reception_packages)
     db.commit()
     db.refresh(db_reception_packages)
@@ -165,7 +165,7 @@ def create_reception_packages(db: Session, reception_packages: schemas.Reception
 def update_wet_leaves(db: Session, wet_leaves_id: int, wet_leaves: schemas.WetLeavesBase):
     db_wet_leaves = get_wet_leaves_by_id(db, wet_leaves_id)
     if db_wet_leaves:
-        for key, value in wet_leaves.dict().items():
+        for key, value in wet_leaves.model_dump().items():
             setattr(db_wet_leaves, key, value)
         db.commit()
         db.refresh(db_wet_leaves)
@@ -174,7 +174,7 @@ def update_wet_leaves(db: Session, wet_leaves_id: int, wet_leaves: schemas.WetLe
 def update_dry_leaves(db: Session, dry_leaves_id: int, dry_leaves: schemas.DryLeavesBase):
     db_dry_leaves = get_dry_leaves_by_id(db, dry_leaves_id)
     if db_dry_leaves:
-        for key, value in dry_leaves.dict().items():
+        for key, value in dry_leaves.model_dump().items():
             setattr(db_dry_leaves, key, value)
         db.commit()
         db.refresh(db_dry_leaves)
@@ -183,7 +183,7 @@ def update_dry_leaves(db: Session, dry_leaves_id: int, dry_leaves: schemas.DryLe
 def update_flour(db: Session, flour_id: int, flour: schemas.FlourBase):
     db_flour = get_flour_by_id(db, flour_id)
     if db_flour:
-        for key, value in flour.dict().items():
+        for key, value in flour.model_dump().items():
             setattr(db_flour, key, value)
         db.commit()
         db.refresh(db_flour)
@@ -192,7 +192,7 @@ def update_flour(db: Session, flour_id: int, flour: schemas.FlourBase):
 def update_shipping(db: Session, shipping_id: int, shipping: schemas.ShippingDataRecord):
     db_shipping = get_shipping_by_id(db, shipping_id)
     if db_shipping:
-        for key, value in shipping.dict().items():
+        for key, value in shipping.model_dump().items():
             setattr(db_shipping, key, value)
         db.commit()
         db.refresh(db_shipping)
@@ -202,7 +202,7 @@ def update_checkpoint(db: Session, checkpoint_id: int, checkpoint: schemas.Check
     db_checkpoint = get_checkpoint_by_id(db, checkpoint_id)
     if not db_checkpoint:
         raise HTTPException(status_code=404, detail="Checkpoint not found")
-    for key, value in checkpoint.dict().items():
+    for key, value in checkpoint.model_dump().items():
         setattr(db_checkpoint, key, value)
     db.commit()
     db.refresh(db_checkpoint)
@@ -211,7 +211,7 @@ def update_checkpoint(db: Session, checkpoint_id: int, checkpoint: schemas.Check
 def update_centra_notifications(db: Session, centra_notif_id: int, centra_notif: schemas.CentraNotification):
     db_centra_notif = get_centra_notifications_by_id(db, centra_notif_id)
     if db_centra_notif:
-        for key, value in centra_notif.dict().items():
+        for key, value in centra_notif.model_dump().items():
             setattr(db_centra_notif, key, value)
         db.commit()
         db.refresh(db_centra_notif)
@@ -220,7 +220,7 @@ def update_centra_notifications(db: Session, centra_notif_id: int, centra_notif:
 def update_reception_packages(db: Session, reception_packages_id: int, reception_packages: schemas.ReceptionPackage):
     db_reception_packages = get_reception_packages_by_id(db, reception_packages_id)
     if db_reception_packages:
-        for key, value in reception_packages.dict().items():
+        for key, value in reception_packages.model_dump().items():
             setattr(db_reception_packages, key, value)
         db.commit()
         db.refresh(db_reception_packages)

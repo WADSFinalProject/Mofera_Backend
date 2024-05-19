@@ -91,8 +91,10 @@ class PackageData(Base):
     id = Column(Integer, primary_key=True, index=True)
     centra_id = Column(Integer, ForeignKey("centra.id"))
     weight = Column(Float)
+    shipping_id = Column(Integer, ForeignKey("shipping.id"))
 
     centra_owner = relationship("Centra", backref="package_data", foreign_keys=[centra_id])
+    shipping = relationship("Shipping", backref="packages", foreign_keys=[shipping_id])
 
 
 class RescaledPackageData(Base):
