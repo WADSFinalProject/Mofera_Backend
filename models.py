@@ -92,6 +92,7 @@ class PackageData(Base):
     centra_id = Column(Integer, ForeignKey("centra.id"))
     weight = Column(Float)
     shipping_id = Column(Integer, ForeignKey("shipping.id"))
+    status = Column(String)
 
     centra_owner = relationship("Centra", backref="package_data", foreign_keys=[centra_id])
     shipping = relationship("Shipping", backref="packages", foreign_keys=[shipping_id])
