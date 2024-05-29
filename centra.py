@@ -72,3 +72,19 @@ def get_dry_leaves(db: db_dependecy):
 def get_flour(db: db_dependecy):
     db_flour = crud.get_flour(db=db)
     return db_flour
+
+@router.put("/wash_wet_leaves/{id}", dependencies=[Depends(role_access(RoleEnum.centra))])
+def wash_wet_leaves(id:int, date:schemas.DateRecord, db: db_dependecy):
+    query = crud.wash_wet_leaves(db=db, id=id, date=date)
+    return 
+
+@router.put("/dry_wet_leaves/{id}", dependencies=[Depends(role_access(RoleEnum.centra))])
+def dry_wet_leaves(id:int, date:schemas.DateRecord, db: db_dependecy):
+    query = crud.dry_wet_leaves(db=db, id=id, date=date)
+    return
+
+@router.put("/flour_dry_leaves/{id}", dependencies=[Depends(role_access(RoleEnum.centra))])
+def flour_dry_leaves(id:int, date:schemas.DateRecord, db: db_dependecy):
+    query = crud.flour_dry_leaves(db=db, id=id, date=date)
+    return 
+

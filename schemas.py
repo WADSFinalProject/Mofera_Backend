@@ -1,7 +1,7 @@
 from typing import Optional
 
 from pydantic import BaseModel
-from datetime import date
+from datetime import date, timedelta
 
 
 class CreateUserRequest(BaseModel):
@@ -21,6 +21,9 @@ class VerificationEmailRequest(BaseModel):
     email: str
     verification_link: str
 
+
+class DateRecord(BaseModel):
+    date: date
 
 class WetLeavesBase(BaseModel):
     weight: float
@@ -75,6 +78,13 @@ class Flour(FlourBase):
 
     class Config:
         orm_mode = True
+
+# class FlourRequest():
+
+#     id: Optional[int]
+#     date: Optional[date]
+#     interval: Optional[timedelta]
+#     mode: Optional[int]
 
 
 class ShippingDataRecord(BaseModel):

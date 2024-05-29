@@ -6,7 +6,7 @@ from datetime import date
 from fastapi import HTTPException
 
 def get_wet_leaves_by_id(db: Session, wet_leaves_id: int):
-    return db.query(models.Collection).filter(models.Collection.id == wet_leaves_id).first()
+    return db.query(models.Wet).filter(models.Wet.id == wet_leaves_id).first()
 
 def get_dry_leaves_by_id(db: Session, dry_leaves_id: int):
     return db.query(models.Dry).filter(models.Dry.id == dry_leaves_id).first()
@@ -48,7 +48,7 @@ def update_checkpoint(db: Session, checkpoint_id: int, checkpoint: schemas.Check
 
 
 def get_wet_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
-    query = db.query(models.Collection)
+    query = db.query(models.Wet)
     if date_filter:
         if before:
             query = query.filter(models.Collection.retrieval_date < date_filter)
@@ -79,6 +79,21 @@ def get_flour(db: Session, skip: int = 0, limit: int = 10, date_filter: date = N
         else:
             query = query.filter(models.Flour.finish_time == date_filter)
     return query.offset(skip).limit(limit).all()
+
+def wash_wet_leaves(db: Session, id: int, date: schemas.DateRecord):
+    query = db.query(models.Wet).filter(models.Wet.id == id).update({models.Wet.washed_date: date.date})
+    db.commit()
+    return query
+
+def dry_wet_leaves(db: Session, id: int, date: schemas.DateRecord):
+    query = db.query(models.Wet).filter(models.Wet.id == id).update({models.Wet.dried_date: date.date})
+    db.commit()
+    return query
+
+def flour_dry_leaves(db: Session, id: int, date: schemas.DateRecord):
+    query = db.query(models.Dry).filter(models.Dry.id == id).update({models.Dry.floured_date: date.date})
+    db.commit()
+    return query
 
 def get_shipping(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Shipping)
@@ -114,7 +129,7 @@ def get_reception_packages(db: Session, skip: int = 0, limit: int = 10, date_fil
     return query.offset(skip).limit(limit).all()
 
 def create_wet_leaves(db: Session, wet_leaves: schemas.WetLeavesRecord):
-    db_wet_leaves = models.Collection(retrieval_date=wet_leaves.retrieval_date, weight=wet_leaves.weight)
+    db_wet_leaves = models.Wet(retrieval_date=wet_leaves.retrieval_date, weight=wet_leaves.weight)
     db.add(db_wet_leaves)
     db.commit()
     db.refresh(db_wet_leaves)

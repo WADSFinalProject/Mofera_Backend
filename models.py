@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, func, DateTime, Boolean,  Enum as SQLEnum, Enum
+from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, func, DateTime, Boolean, Enum as SQLEnum, Enum
 from sqlalchemy.orm import relationship
 from roles_enum import RoleEnum
 
@@ -152,13 +152,24 @@ class Collection(Base):
     weight = Column(Float)
     centra_id = Column(Integer, ForeignKey("centra.id"))
 
+class Wet(Base):
+    __tablename__ = "wet"
+
+    id = Column(Integer, primary_key=True, index=True)
+    retrieval_date = Column(Date)
+    washed_date = Column(Date, nullable=True)
+    dried_date = Column(Date, nullable=True)
+    weight = Column(Float)
+    centra_id = Column(Integer, ForeignKey("centra.id"))
+
 
 class Dry(Base):
     __tablename__ = "dry"
 
     id = Column(Integer, primary_key=True, index=True)
     weight = Column(Float)
-    dried_date = Column(Date)
+    floured_date = Column(Date, nullable=True)
+    centra_id = Column(Integer, ForeignKey("centra.id"))
 
 
 class Flour(Base):
@@ -166,7 +177,7 @@ class Flour(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     weight = Column(Float)
-    floured_date = Column(Date)
+    centra_id = Column(Integer, ForeignKey("centra.id"))
 
 class CentraNotification(Base):
     __tablename__ = "centra_notification"
