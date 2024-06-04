@@ -95,6 +95,10 @@ def flour_dry_leaves(db: Session, id: int, date: schemas.DateRecord):
     db.commit()
     return query
 
+def get_packages(db: Session):
+    query = db.query(models.PackageData).all()
+    return query
+
 def get_shipping(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Shipping)
     if date_filter:
@@ -128,8 +132,15 @@ def get_reception_packages(db: Session, skip: int = 0, limit: int = 10, date_fil
             query = query.filter(models.ReceptionPackage.receival_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
+def update_package_shipping_detail(db:Session, id:int, shipping_id:int):
+    db_package = db.query(models.PackageData).filter(models.PackageData.id == id).first()
+    setattr(db_package, "shipping_id", shipping_id)
+    db.commit()
+    db.refresh(db_package)
+    return db_package
+
 def create_wet_leaves(db: Session, wet_leaves: schemas.WetLeavesRecord):
-    db_wet_leaves = models.Wet(retrieval_date=wet_leaves.retrieval_date, weight=wet_leaves.weight)
+    db_wet_leaves = models.Wet(retrieval_date=wet_leaves.retrieval_date, weight=wet_leaves.weight, centra_id=wet_leaves.centra_id)
     db.add(db_wet_leaves)
     db.commit()
     db.refresh(db_wet_leaves)
@@ -149,8 +160,8 @@ def create_flour(db: Session, flour: schemas.FlourRecord):
     db.refresh(db_flour)
     return db_flour
 
-def create_shipping(db: Session, shipping: schemas.ShippingDepature):
-    db_shipping = models.Shipping(departure_date=shipping.departure_date, expedition_id=shipping.expedition_id)
+def create_shipping(db: Session, shipping: schemas.ShippingInfoRecord):
+    db_shipping = models.Shipping(**shipping.model_dump(exclude={"packages"}))
     db.add(db_shipping)
     db.commit()
     db.refresh(db_shipping)
@@ -162,6 +173,13 @@ def create_checkpoint(db: Session, checkpoint: schemas.CheckpointDataRecord):
     db.commit()
     db.refresh(db_checkpoint)
     return db_checkpoint
+
+def create_package(db: Session, package: schemas.packageRecord):
+    db_package = models.PackageData(**package.model_dump())
+    db.add(db_package)
+    db.commit()
+    db.refresh(db_package)
+    return db_package
 
 def create_centra_notifications(db: Session, centra_notif: schemas.CentraNotification):
     db_centra_notif = models.CentraNotification(message=centra_notif.message, user_id=centra_notif.user_id)

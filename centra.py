@@ -73,6 +73,11 @@ def get_flour(db: db_dependecy):
     db_flour = crud.get_flour(db=db)
     return db_flour
 
+@router.get("/packages", dependencies=[Depends(role_access(RoleEnum.centra))])
+def get_packages(db: db_dependecy):
+    db_packages = crud.get_packages(db=db)
+    return db_packages
+
 @router.put("/wash_wet_leaves/{id}", dependencies=[Depends(role_access(RoleEnum.centra))])
 def wash_wet_leaves(id:int, date:schemas.DateRecord, db: db_dependecy):
     query = crud.wash_wet_leaves(db=db, id=id, date=date)
@@ -88,3 +93,13 @@ def flour_dry_leaves(id:int, date:schemas.DateRecord, db: db_dependecy):
     query = crud.flour_dry_leaves(db=db, id=id, date=date)
     return 
 
+@router.post("/add_package", dependencies=[Depends(role_access(RoleEnum.centra))])
+def add_package(record:schemas.packageRecord, db:db_dependecy):
+    query = crud.create_package(db=db, package=record)
+
+@router.post("/add_shipping", dependencies=[Depends(role_access(RoleEnum.centra))])
+def add_shipping_info(shipping:schemas.ShippingInfoRecord, db:db_dependecy):
+    db_shipping = crud.create_shipping(db=db, shipping=shipping)
+    for id in shipping.packages:
+        crud.update_package_shipping_detail(db=db, id=id, shipping_id=db_shipping.id)
+    

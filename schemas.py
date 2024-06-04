@@ -41,7 +41,7 @@ class WetLeaves(WetLeavesBase):
     centra_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class DryLeavesBase(BaseModel):
@@ -59,7 +59,7 @@ class DryLeaves(DryLeavesBase):
     dried_date: date
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 
 class FlourBase(BaseModel):
@@ -77,7 +77,7 @@ class Flour(FlourBase):
     floured_date: date
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 # class FlourRequest():
 
@@ -86,6 +86,21 @@ class Flour(FlourBase):
 #     interval: Optional[timedelta]
 #     mode: Optional[int]
 
+class packageRecord(BaseModel):
+    
+    centra_id: int
+    weight: float
+    shipping_id: Optional[int]=None
+    status: int=0
+
+class ShippingInfoRecord(BaseModel):
+
+    packages: list[int]
+    total_packages: int
+    total_weight: float
+    expedition: str
+    departure_date: date
+    estimated_time: timedelta
 
 class ShippingDataRecord(BaseModel):
 
@@ -103,7 +118,7 @@ class ShippingData(ShippingDataRecord):
     expedition_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 # Checkpoint
 
 
@@ -124,7 +139,7 @@ class CheckpointData(CheckpointDataRecord):
     
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class CentraNotification(BaseModel):
 
@@ -140,7 +155,7 @@ class CentraNotificationData(CentraNotification):
     user_id: int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class GuardHarborNotification(BaseModel):
 
@@ -156,7 +171,7 @@ class GuardHarborNotificationData(GuardHarborNotification):
         user_id: int
     
         class Config:
-            orm_mode = True
+            from_attributes = True
             
 class ReceptionPackageBase(BaseModel):
     package_id: str
@@ -173,7 +188,7 @@ class ReceptionPackage(ReceptionPackageBase):
     id:int
 
     class Config:
-        orm_mode = True
+        from_attributes = True
 
 class ReceptionPackageReceival(ReceptionPackageBase):
     receival_date: date

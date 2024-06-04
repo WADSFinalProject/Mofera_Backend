@@ -1,5 +1,5 @@
 from database import Base
-from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, func, DateTime, Boolean, Enum as SQLEnum, Enum
+from sqlalchemy import Column, Integer, String, Float, Date, ForeignKey, func, DateTime, Boolean, Enum as SQLEnum, Enum, Interval
 from sqlalchemy.orm import relationship
 from roles_enum import RoleEnum
 
@@ -56,12 +56,8 @@ class Centra(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     location = Column(String)
-    collection_id = Column(Integer, ForeignKey("collection.id"))
-    package_data_id = Column(Integer, ForeignKey("package_data.id"))
     # reception_package_id = Column(Integer, ForeignKey("reception_package.id"))
 
-    collection_centra = relationship("Collection", backref="centra", foreign_keys=[collection_id])
-    package_data_centra = relationship("PackageData", backref="centra", foreign_keys=[package_data_id])
     # reception_package_centra = relationship(
     #     "ReceptionPackage", backref="centra", foreign_keys=[reception_package_id])
 
@@ -91,8 +87,8 @@ class PackageData(Base):
     id = Column(Integer, primary_key=True, index=True)
     centra_id = Column(Integer, ForeignKey("centra.id"))
     weight = Column(Float)
-    shipping_id = Column(Integer, ForeignKey("shipping.id"))
-    status = Column(String)
+    shipping_id = Column(Integer, ForeignKey("shipping.id"), nullable=True)
+    status = Column(Integer, default=0)
 
     centra_owner = relationship("Centra", backref="package_data", foreign_keys=[centra_id])
     shipping = relationship("Shipping", backref="packages", foreign_keys=[shipping_id])
@@ -127,11 +123,13 @@ class Shipping(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     departure_date = Column(Date)
-    expedition_id = Column(Integer, ForeignKey("expedition.id"))
-    guard_harbor_dest_id = Column(Integer, ForeignKey("guard_harbor.id"))
+    estimated_time = Column(Interval, nullable=True)
+    total_weight = Column(Float)
+    total_packages = Column(Integer)
+    expedition = Column(String)
+    # expedition_id = Column(Integer, ForeignKey("expedition.id"))
 
-    expedition = relationship("Expedition", backref="shipping")
-    guard_harbor = relationship("GuardHarbor", backref="shipping")
+    # expedition = relationship("Expedition", backref="shipping")
 
 
 class GuardHarbor(Base):
@@ -161,6 +159,8 @@ class Wet(Base):
     dried_date = Column(Date, nullable=True)
     weight = Column(Float)
     centra_id = Column(Integer, ForeignKey("centra.id"))
+
+    centra = relationship("Centra", backref="wet")
 
 
 class Dry(Base):
@@ -199,7 +199,7 @@ class GuardHarborNotification(Base):
     user = relationship("Users", backref="guard_harbor_notification")
 
 class ReceptionPackage(Base):
-    __tablename__ = 'reception_packages'
+    __tablename__ = "reception_packages"
     id = Column(Integer, primary_key=True, index=True)
     package_id = Column(Integer, ForeignKey("package_data.id"))
     total_packages_received = Column(Integer)
