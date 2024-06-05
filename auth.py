@@ -35,6 +35,7 @@ class CreateUserRequest(BaseModel):
     email: str
     password: str
     role: RoleEnum  
+    centra_unit: Optional[str] = None
 
 
 
@@ -66,7 +67,8 @@ async def create_user(create_user_request: CreateUserRequest, db: Session = Depe
             username=create_user_request.username,
             email=create_user_request.email,
             hashed_password=bcrypt_context.hash(create_user_request.password),
-            role=create_user_request.role  # role assigned from the request
+            role=create_user_request.role,
+            centra_unit=create_user_request.centra_unit if create_user_request.role == RoleEnum.centra else None  
         )
         db.add(create_user_model)
         db.commit()

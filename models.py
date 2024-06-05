@@ -22,9 +22,11 @@ class Users(Base):
     email = Column(String(length=500), unique=True)
     hashed_password = Column(String(length=500))
     role = Column(SQLEnum(RoleEnum), default=RoleEnum.centra, nullable=False)
+    centra_unit = Column(String(length=500), nullable=True)  # Add this line
 
     refresh_tokens = relationship(
-        "RefreshToken", back_populates="users", order_by="RefreshToken.expires_at.desc()")
+        "RefreshToken", back_populates="users", order_by="RefreshToken.expires_at.desc()"
+    )
 
 
 class RefreshToken(Base):
