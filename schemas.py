@@ -25,6 +25,13 @@ class VerificationEmailRequest(BaseModel):
 class DateRecord(BaseModel):
     date: date
 
+class CollectionBase(BaseModel):
+    weight: float
+
+class CollectionRecord(CollectionBase):
+    retrieval_date: date
+    centra_id: int
+
 class WetLeavesBase(BaseModel):
     weight: float
 

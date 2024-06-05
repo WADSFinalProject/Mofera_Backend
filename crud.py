@@ -46,9 +46,8 @@ def update_checkpoint(db: Session, checkpoint_id: int, checkpoint: schemas.Check
     db.refresh(query)
     return query
 
-
-def get_wet_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
-    query = db.query(models.Wet)
+def get_collection(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+    query = db.query(models.Dry)
     if date_filter:
         if before:
             query = query.filter(models.Collection.retrieval_date < date_filter)
@@ -56,6 +55,17 @@ def get_wet_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
             query = query.filter(models.Collection.retrieval_date > date_filter)
         else:
             query = query.filter(models.Collection.retrieval_date == date_filter)
+    return query.offset(skip).limit(limit).all()
+
+def get_wet_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+    query = db.query(models.Wet)
+    if date_filter:
+        if before:
+            query = query.filter(models.Wet.retrieval_date < date_filter)
+        elif after:
+            query = query.filter(models.Wet.retrieval_date > date_filter)
+        else:
+            query = query.filter(models.Wet.retrieval_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
 def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
@@ -138,6 +148,14 @@ def update_package_shipping_detail(db:Session, id:int, shipping_id:int):
     db.commit()
     db.refresh(db_package)
     return db_package
+
+def create_collection(db: Session, collection: schemas.CollectionRecord):
+    db_collection = models.Collection(retrieval_date=collection.retrieval_date, weight=collection.weight, centra_id=collection.centra_id)
+    db.add(db_collection)
+    db.commit()
+    db.refresh(db_collection)
+    return db_collection
+
 
 def create_wet_leaves(db: Session, wet_leaves: schemas.WetLeavesRecord):
     db_wet_leaves = models.Wet(retrieval_date=wet_leaves.retrieval_date, weight=wet_leaves.weight, centra_id=wet_leaves.centra_id)

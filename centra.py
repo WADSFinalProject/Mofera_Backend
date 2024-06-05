@@ -43,6 +43,11 @@ db_dependecy = Annotated[Session, Depends(get_db)]
 
 logger = logging.getLogger(__name__)
 
+@router.post("/new_collection", dependencies=[Depends(role_access(RoleEnum.centra))])
+def add_collection(collection: schemas.CollectionRecord, db: db_dependecy):
+    db_collection = crud.create_collection()
+    return JSONResponse(content={"detail": "Collection record added successfully"}, status_code=status.HTTP_201_CREATED)
+
 @router.post("/new_wet_leaves", dependencies=[Depends(role_access(RoleEnum.centra))])
 def add_wet_leaves(wet_leaves: schemas.WetLeavesRecord, db: db_dependecy):
     db_collection = crud.create_wet_leaves(db=db, wet_leaves=wet_leaves)
@@ -57,6 +62,11 @@ def add_dry_leaves(dry_leaves: schemas.DryLeavesRecord, db: db_dependecy):
 def add_flour(flour: schemas.FlourRecord, db: db_dependecy):
     db_flour = crud.create_flour(db=db, flour=flour)
     return JSONResponse(content={"detail": "Flour record added successfully"}, status_code=status.HTTP_201_CREATED)
+
+@router.get("/collection", dependencies=[Depends(role_access(RoleEnum.centra))])
+def get_collection(db: db_dependecy):
+    db_collection = crud.get_collection(db=db)
+    return db_collection
 
 @router.get("/wet_leaves", dependencies=[Depends(role_access(RoleEnum.centra))])
 def get_wet_leaves(db: db_dependecy):
