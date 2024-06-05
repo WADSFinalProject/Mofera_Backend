@@ -43,7 +43,16 @@ db_dependecy = Annotated[Session, Depends(get_db)]
 
 logger = logging.getLogger(__name__)
 
+@router.put("/rescale/{id}", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def rescale_package(id: int, rescale: schemas.RescaledRecord, db:db_dependecy):
+    db_rescaled = crud.update_rescaled(db=db, id=id, rescaled_weight=rescale.weight)
+    return JSONResponse(content={"detail": "checkpoint record added successfully"}, status_code=status.HTTP_201_CREATED)
+
+
+
 @router.post("/add_reception", dependencies=[Depends(role_access(RoleEnum.xyz))])
-def add_checkpoint_data(checkpoint: schemas.ReceptionPackageRecord, db: db_dependecy):
-    db_checkpoint = crud.create_reception_packages(db=db, checkpoint=checkpoint)
+def add_checkpoint_data(reception: schemas.ReceptionPackageRecord, db: db_dependecy):
+    db_reception = crud.create_reception_packages(db=db, reception_packages=reception)
+    for id in reception.package_id:
+        crud.update_reception_detail(db=db, id=id, reception_id=db_reception.id)
     return JSONResponse(content={"detail": "checkpoint record added successfully"}, status_code=status.HTTP_201_CREATED)

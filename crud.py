@@ -149,6 +149,20 @@ def update_package_shipping_detail(db:Session, id:int, shipping_id:int):
     db.refresh(db_package)
     return db_package
 
+def update_rescaled(db:Session, id:int, rescaled_weight: float):
+    db_rescaled = db.query(models.PackageData).filter(models.PackageData.id == id)
+    setattr(db_rescaled, "weight", rescaled_weight)
+    db.commit()
+    db.refresh(db_rescaled)
+    return db_rescaled
+
+def update_reception_detail(db:Session, id:int, reception_id:int):
+    db_reception = db.query(models.ReceptionPackage).filter(models.ReceptionPackage.id == id).first()
+    setattr(db_reception, "reception_id", reception_id)
+    db.commit()
+    db.refresh(db_reception)
+    return db_reception
+
 def create_collection(db: Session, collection: schemas.CollectionRecord):
     db_collection = models.Collection(retrieval_date=collection.retrieval_date, weight=collection.weight, centra_id=collection.centra_id)
     db.add(db_collection)

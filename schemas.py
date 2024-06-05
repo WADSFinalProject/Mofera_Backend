@@ -107,7 +107,7 @@ class ShippingInfoRecord(BaseModel):
     total_weight: float
     expedition: str
     departure_date: date
-    estimated_time: timedelta
+    estimated_time: date
 
 class ShippingDataRecord(BaseModel):
 
@@ -137,6 +137,7 @@ class CheckpointDataBase(BaseModel):
 class CheckpointDataRecord(CheckpointDataBase):
 
     arrival_date: date
+    package_ids: list[int]
     note : Optional[str] = None
 
 
@@ -179,9 +180,12 @@ class GuardHarborNotificationData(GuardHarborNotification):
     
         class Config:
             from_attributes = True
-            
+
+class RescaledRecord(BaseModel):
+    weight: float
+
 class ReceptionPackageBase(BaseModel):
-    package_id: str
+    package_id: list[int]
     total_packages_received: int
     weight: float
     centra_id: int
