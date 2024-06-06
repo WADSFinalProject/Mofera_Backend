@@ -87,19 +87,19 @@ db_dependency = Annotated[Session, Depends(get_db)]
 #     scheduler.add_job(check_expired_packages, 'interval', minutes=60) 
 #     scheduler.start()
 
-def check_expired_packages():
-    db = SessionLocal()
-    try:
-        expired_packages = crud.check_package_expiry(db)
-        if expired_packages:
-            print(f"Updated {len(expired_packages)} expired packages.")
-    finally:
-        db.close()
+# def check_expired_packages():
+#     db = SessionLocal()
+#     try:
+#         expired_packages = crud.check_package_expiry(db)
+#         if expired_packages:
+#             print(f"Updated {len(expired_packages)} expired packages.")
+#     finally:
+#         db.close()
 
-@app.get("/check_expired_packages/")
-def manual_check_expired_packages(db: Session = Depends(get_db)):
-    expired_packages = crud.check_and_update_expired_packages(db)
-    return {"updated_packages": len(expired_packages)}
+# @app.get("/check_expired_packages/")
+# def manual_check_expired_packages(db: Session = Depends(get_db)):
+#     expired_packages = crud.check_and_update_expired_packages(db)
+#     return {"updated_packages": len(expired_packages)}
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def user(user: None, db: db_dependency):
