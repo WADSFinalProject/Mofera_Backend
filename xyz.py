@@ -48,7 +48,10 @@ def rescale_package(id: int, rescale: schemas.RescaledRecord, db:db_dependecy):
     db_rescaled = crud.update_rescaled(db=db, id=id, rescaled_weight=rescale.weight)
     return JSONResponse(content={"detail": "checkpoint record added successfully"}, status_code=status.HTTP_201_CREATED)
 
-
+@router.put("/collect/package/{id}", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def collect_package(id: int, db: db_dependecy):
+    db_collect = crud.update_package_status(db=db, id=id, status=3)
+    return JSONResponse(content={"detail": "checkpoint record added successfully"}, status_code=status.HTTP_201_CREATED)
 
 @router.post("/add_reception", dependencies=[Depends(role_access(RoleEnum.xyz))])
 def add_checkpoint_data(reception: schemas.ReceptionPackageRecord, db: db_dependecy):

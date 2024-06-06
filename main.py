@@ -6,6 +6,8 @@ import centra
 import guard_harbor
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, APIRouter, Request, status
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 from sqlalchemy.orm import Session
 from typing import List, Annotated
@@ -13,6 +15,7 @@ from pydantic import BaseModel, Field
 from database import SessionLocal, engine
 from datetime import date
 from models import Users
+import crud
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -48,6 +51,7 @@ app.include_router(guard_harbor.router)
 origins = [
     "http://localhost:5173",
     "http://localhost:5174",
+    "https://mofera-frontend-seven.vercel.app"
     # add other origins here
 
 
@@ -76,6 +80,26 @@ def get_db():
 
 db_dependency = Annotated[Session, Depends(get_db)]
 
+
+@app.on_event("startup")
+def startup_event():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(check_expired_packages, 'interval', minutes=60) 
+    scheduler.start()
+
+def check_expired_packages():
+    db = SessionLocal()
+    try:
+        expired_packages = crud.check_package_expiry(db)
+        if expired_packages:
+            print(f"Updated {len(expired_packages)} expired packages.")
+    finally:
+        db.close()
+
+@app.get("/check_expired_packages/")
+def manual_check_expired_packages(db: Session = Depends(get_db)):
+    expired_packages = crud.check_and_update_expired_packages(db)
+    return {"updated_packages": len(expired_packages)}
 
 @app.get("/", status_code=status.HTTP_200_OK)
 async def user(user: None, db: db_dependency):

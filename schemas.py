@@ -99,6 +99,7 @@ class packageRecord(BaseModel):
     weight: float
     shipping_id: Optional[int]=None
     status: int=0
+    exp_date: date
 
 class ShippingInfoRecord(BaseModel):
 
