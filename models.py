@@ -91,6 +91,8 @@ class PackageData(Base):
     weight = Column(Float)
     shipping_id = Column(Integer, ForeignKey("shipping.id"), nullable=True)
     status = Column(Integer, default=0)
+    received_date = Column(Date, nullable=True)
+    reception_id = Column(Integer, nullable=True)
 
     centra_owner = relationship("Centra", backref="package_data", foreign_keys=[centra_id])
     shipping = relationship("Shipping", backref="packages", foreign_keys=[shipping_id])
@@ -102,22 +104,10 @@ class RescaledPackageData(Base):
     id = Column(Integer, primary_key=True, index=True)
     package_id = Column(Integer, ForeignKey("package_data.id"))
     rescaled_weight = Column(Float)
+    materials_to_cover = Column(String)
 
     original_package = relationship(
         "PackageData", backref="rescaled_package_data")
-
-
-class ReceptionPackage(Base):
-    __tablename__ = "reception_package"
-
-    id = Column(Integer, primary_key=True, index=True)
-    package_id = Column(Integer, ForeignKey("package_data.id"))
-    final_weight = Column(Float)
-    receival_date = Column(Date)
-    centra_id = Column(Integer, ForeignKey("centra.id"))
-
-    source_centra = relationship("Centra", backref="reception_package", foreign_keys=[centra_id])
-    original_package = relationship("PackageData", backref="reception_package", foreign_keys=[package_id])
 
 
 class Shipping(Base):
@@ -125,7 +115,7 @@ class Shipping(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     departure_date = Column(Date)
-    estimated_time = Column(Interval, nullable=True)
+    estimated_time = Column(Date, nullable=True)
     total_weight = Column(Float)
     total_packages = Column(Integer)
     expedition = Column(String)
@@ -181,24 +171,24 @@ class Flour(Base):
     weight = Column(Float)
     centra_id = Column(Integer, ForeignKey("centra.id"))
 
-class CentraNotification(Base):
-    __tablename__ = "centra_notification"
+# class CentraNotification(Base):
+#     __tablename__ = "centra_notification"
 
-    id = Column(Integer, primary_key=True, index=True)
-    message = Column(Integer)
-    date = Column(Date)
-    user_id = Column(Integer, ForeignKey("users.id"))
+#     id = Column(Integer, primary_key=True, index=True)
+#     message = Column(Integer)
+#     date = Column(Date)
+#     user_id = Column(Integer, ForeignKey("users.id"))
 
-    user = relationship("Users", backref="centra_notification")
+#     user = relationship("Users", backref="centra_notification")
 
-class GuardHarborNotification(Base):
-    __tablename__ = "guard_harbor_notification"
+# class GuardHarborNotification(Base):
+#     __tablename__ = "guard_harbor_notification"
 
-    id = Column(Integer, primary_key=True, index=True)
-    message = Column(Integer)
-    user_id = Column(Integer, ForeignKey("users.id"))
+#     id = Column(Integer, primary_key=True, index=True)
+#     message = Column(Integer)
+#     user_id = Column(Integer, ForeignKey("users.id"))
 
-    user = relationship("Users", backref="guard_harbor_notification")
+#     user = relationship("Users", backref="guard_harbor_notification")
 
 class ReceptionPackage(Base):
     __tablename__ = "reception_packages"
