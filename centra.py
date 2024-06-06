@@ -108,7 +108,7 @@ def add_package(record:schemas.packageRecord, db:db_dependecy):
     query = crud.create_package(db=db, package=record)
 
 @router.put("/update_package_status/{id}", dependencies=[Depends(role_access(RoleEnum.centra))])
-def update_package_status(id:int, status:schemas.PackageStatusRecord, db:db_dependecy):
+def update_package_status(id:int, status:schemas.packageRecord, db:db_dependecy):
     query = crud.update_package_status(db=db, id=id, status=status)
     if query is None:
         raise HTTPException(status_code=404, detail="Package not found")
