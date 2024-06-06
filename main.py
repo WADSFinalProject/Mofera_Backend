@@ -51,6 +51,7 @@ app.include_router(guard_harbor.router)
 origins = [
     "http://localhost:5173",
     "http://localhost:5174",
+    "https://mofera-frontend-seven.vercel.app"
     # add other origins here
 
 
