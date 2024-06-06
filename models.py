@@ -126,7 +126,7 @@ class Shipping(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     departure_date = Column(Date)
-    estimated_time = Column(Interval, nullable=True)
+    estimated_time = Column(Date, nullable=True)
     total_weight = Column(Float)
     total_packages = Column(Integer)
     expedition = Column(String (500))

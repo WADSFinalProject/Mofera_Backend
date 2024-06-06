@@ -4,11 +4,6 @@ from pydantic import BaseModel
 from datetime import date, timedelta
 
 
-class CreateUserRequest(BaseModel):
-
-    username: str
-    email: str
-    password: str
 
 
 class Token(BaseModel):
@@ -100,6 +95,20 @@ class packageRecord(BaseModel):
     shipping_id: Optional[int]=None
     status: int=0
     exp_date: date
+
+class PackageCreate(packageRecord):
+    pass
+
+class PackageUpdate(packageRecord):
+    status: int
+
+class Package(packageRecord):
+    
+        id: int
+        status: int
+    
+        class Config:
+            from_attributes = True
 
 class ShippingInfoRecord(BaseModel):
 

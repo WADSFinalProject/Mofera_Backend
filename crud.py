@@ -40,14 +40,10 @@ def get_checkpoints(db: Session, skip: int = 0, limit: int = 10, date_filter: da
             query = query.filter(models.CheckpointData.arrival_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
-def update_checkpoint(db: Session, checkpoint_id: int, checkpoint: schemas.CheckpointDataRecord):
-    query = db.query(models.CheckpointData).filter(models.CheckpointData.id == checkpoint_id)
-    if not query:
-        raise HTTPException(status_code=404, detail="Checkpoint not found")
-    query.update(**checkpoint.model_dump())
-    db.commit()
-    db.refresh(query)
-    return query
+def update_checkpoint(db: Session, id: int):
+
+    update_package_status(db, id, 2)
+    return
 
 def get_collection(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Dry)
@@ -147,7 +143,8 @@ def get_reception_packages(db: Session, skip: int = 0, limit: int = 10, date_fil
 
 def update_package_shipping_detail(db:Session, id:int, shipping_id:int):
     db_package = db.query(models.PackageData).filter(models.PackageData.id == id).first()
-    setattr(db_package, "shipping_id", shipping_id)
+    setattr(db_package, "shipping_id", shipping_id,)
+    update_package_status(db, id, 1)
     db.commit()
     db.refresh(db_package)
     return db_package
@@ -203,13 +200,13 @@ def create_shipping(db: Session, shipping: schemas.ShippingInfoRecord):
     return db_shipping
 
 def create_checkpoint(db: Session, checkpoint: schemas.CheckpointDataRecord):
-    db_checkpoint = models.CheckpointData(**checkpoint.model_dump())
+    db_checkpoint = models.CheckpointData(**checkpoint.model_dump(exclude="package_ids"))
     db.add(db_checkpoint)
     db.commit()
     db.refresh(db_checkpoint)
     return db_checkpoint
 
-def create_package(db: Session, package: schemas.packageRecord):
+def create_package(db: Session, package: schemas.PackageCreate):
     db_package = models.PackageData(**package.model_dump())
     db.add(db_package)
     db.commit()
@@ -266,15 +263,6 @@ def update_shipping(db: Session, shipping_id: int, shipping: schemas.ShippingDat
         db.refresh(db_shipping)
     return db_shipping
 
-def update_checkpoint(db: Session, checkpoint_id: int, checkpoint: schemas.CheckpointDataRecord):
-    db_checkpoint = get_checkpoint_by_id(db, checkpoint_id)
-    if not db_checkpoint:
-        raise HTTPException(status_code=404, detail="Checkpoint not found")
-    for key, value in checkpoint.model_dump().items():
-        setattr(db_checkpoint, key, value)
-    db.commit()
-    db.refresh(db_checkpoint)
-    return db_checkpoint
 
 def update_centra_notifications(db: Session, centra_notif_id: int, centra_notif: schemas.CentraNotification):
     db_centra_notif = get_centra_notifications_by_id(db, centra_notif_id)
@@ -300,10 +288,12 @@ def update_package_status(db: Session, package_id: int, status: int):
         setattr(db_package, "status", status)
         db.commit()
         db.refresh(db_package)
+        print(status)
+
         return db_package
     return None
 
-def check_package_expiry(db: Session, package_id: int, date: date):
+def check_package_expiry(db: Session):
     now = date.utcnow()
     expired_packages = db.query(models.PackageData).filter(models.PackageData.status < 4, models.PackageData.exp_date < now).all()
     for package in expired_packages:
