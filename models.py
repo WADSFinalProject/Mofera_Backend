@@ -47,7 +47,7 @@ class Appointment(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     shipping_id = Column(Integer, ForeignKey("shipping.id"))
-    receiver_name = Column(String)
+    receiver_name = Column(String (500))
     pickup_time = Column(Date)
 
     shipping = relationship("Shipping", backref="appointment")
@@ -57,7 +57,7 @@ class Centra(Base):
     __tablename__ = "centra"
 
     id = Column(Integer, primary_key=True, index=True)
-    location = Column(String)
+    location = Column(String (500))
     # reception_package_id = Column(Integer, ForeignKey("reception_package.id"))
 
     # reception_package_centra = relationship(
@@ -80,7 +80,7 @@ class Expedition(Base):
     __tablename__ = "expedition"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String)
+    name = Column(String (500))
 
 
 class PackageData(Base):
@@ -91,6 +91,7 @@ class PackageData(Base):
     weight = Column(Float)
     shipping_id = Column(Integer, ForeignKey("shipping.id"), nullable=True)
     status = Column(Integer, default=0)
+    exp_date = Column(Date)
 
     centra_owner = relationship("Centra", backref="package_data", foreign_keys=[centra_id])
     shipping = relationship("Shipping", backref="packages", foreign_keys=[shipping_id])
@@ -128,7 +129,7 @@ class Shipping(Base):
     estimated_time = Column(Interval, nullable=True)
     total_weight = Column(Float)
     total_packages = Column(Integer)
-    expedition = Column(String)
+    expedition = Column(String (500))
     # expedition_id = Column(Integer, ForeignKey("expedition.id"))
 
     # expedition = relationship("Expedition", backref="shipping")
@@ -138,7 +139,7 @@ class GuardHarbor(Base):
     __tablename__ = "guard_harbor"
 
     id = Column(Integer, primary_key=True, index=True)
-    location = Column(String)
+    location = Column(String (500))
     checkpoint_id = Column(Integer, ForeignKey("checkpoint_data.id"))
 
     checkpoint = relationship("CheckpointData", backref="guard_harbor")

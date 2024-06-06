@@ -23,6 +23,9 @@ def get_checkpoint_by_id(db: Session, checkpoint_id: int):
 def get_centra_notifications_by_id(db: Session, centra_notif_id: int):
     return db.query(models.CentraNotification).filter(models.CentraNotification.id == centra_notif_id).first()
 
+def get_package_by_id(db: Session, package_id: int):
+    return db.query(models.PackageData).filter(models.PackageData.id == package_id).first()
+
 def get_reception_packages_by_id(db: Session, reception_packages_id: int):
     return db.query(models.ReceptionPackage).filter(models.ReceptionPackage.id == reception_packages_id).first()
 
@@ -290,6 +293,24 @@ def update_reception_packages(db: Session, reception_packages_id: int, reception
         db.commit()
         db.refresh(db_reception_packages)
     return db_reception_packages
+
+def update_package_status(db: Session, package_id: int, status: int):
+    db_package = get_package_by_id(db, package_id)
+    if db_package:
+        setattr(db_package, "status", status)
+        db.commit()
+        db.refresh(db_package)
+        return db_package
+    return None
+
+def check_package_expiry(db: Session, package_id: int, date: date):
+    now = date.utcnow()
+    expired_packages = db.query(models.PackageData).filter(models.PackageData.status < 4, models.PackageData.exp_date < now).all()
+    for package in expired_packages:
+        package.status = 4  
+        db.commit()
+        db.refresh(package)
+    return expired_packages
 
 def delete_wet_leaves(db: Session, wet_leaves_id: int):
     db_wet_leaves = get_wet_leaves_by_id(db, wet_leaves_id)
