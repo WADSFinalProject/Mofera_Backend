@@ -2,6 +2,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
 import models
 import schemas
+import datetime
 from datetime import date
 from fastapi import HTTPException
 
@@ -119,14 +120,15 @@ def get_shipping(db: Session, skip: int = 0, limit: int = 10, date_filter: date 
             query = query.filter(models.Shipping.departure_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
-def get_centra_notifications(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+def get_centra_notifications(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, filter: str|None = None):
     query = db.query(models.CentraNotification)
-    if date_filter:
-        if before:
+
+    match filter:
+        case "before":
             query = query.filter(models.CentraNotification.date < date_filter)
-        elif after:
+        case "after":
             query = query.filter(models.CentraNotification.date > date_filter)
-        else:
+        case "during":
             query = query.filter(models.CentraNotification.date == date_filter)
     return query.offset(skip).limit(limit).all()
 
@@ -213,8 +215,8 @@ def create_package(db: Session, package: schemas.PackageCreate):
     db.refresh(db_package)
     return db_package
 
-def create_centra_notifications(db: Session, centra_notif: schemas.CentraNotification):
-    db_centra_notif = models.CentraNotification(message=centra_notif.message, user_id=centra_notif.user_id)
+def create_centra_notifications(db: Session, message:str, id:int):
+    db_centra_notif = models.CentraNotification(message=message, date=datetime.datetime.now(), centra_id=id)
     db.add(db_centra_notif)
     db.commit()
     db.refresh(db_centra_notif)
