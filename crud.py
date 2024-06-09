@@ -5,6 +5,7 @@ import schemas
 import datetime
 from datetime import date
 from fastapi import HTTPException
+from typing import Union
 
 def get_wet_leaves_by_id(db: Session, wet_leaves_id: int):
     return db.query(models.Wet).filter(models.Wet.id == wet_leaves_id).first()
@@ -120,7 +121,7 @@ def get_shipping(db: Session, skip: int = 0, limit: int = 10, date_filter: date 
             query = query.filter(models.Shipping.departure_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
-def get_centra_notifications(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, filter: str|None = None):
+def get_centra_notifications(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, filter: Union[str, None] = None):
     query = db.query(models.CentraNotification)
 
     if filter == "before":
