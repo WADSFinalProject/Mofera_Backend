@@ -123,13 +123,14 @@ def get_shipping(db: Session, skip: int = 0, limit: int = 10, date_filter: date 
 def get_centra_notifications(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, filter: str|None = None):
     query = db.query(models.CentraNotification)
 
-    match filter:
-        case "before":
-            query = query.filter(models.CentraNotification.date < date_filter)
-        case "after":
+    if filter == "before":
+        query = query.filter(models.CentraNotification.date < date_filter)
+    elif filter == "after":
             query = query.filter(models.CentraNotification.date > date_filter)
-        case "during":
+    elif filter == "during":
             query = query.filter(models.CentraNotification.date == date_filter)
+    
+
     return query.offset(skip).limit(limit).all()
 
 def get_reception_packages(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
