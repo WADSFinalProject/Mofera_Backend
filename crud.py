@@ -71,11 +71,11 @@ def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
     query = db.query(models.Dry)
     if date_filter:
         if before:
-            query = query.filter(models.Dry.dried_date < date_filter)
+            query = query.filter(models.Dry.floured_date < date_filter)
         elif after:
-            query = query.filter(models.Dry.dried_date > date_filter)
+            query = query.filter(models.Dry.floured_date > date_filter)
         else:
-            query = query.filter(models.Dry.dried_date == date_filter)
+            query = query.filter(models.Dry.floured_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
 def get_flour(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
@@ -163,30 +163,30 @@ def update_reception_detail(db:Session, id:int, reception_id:int):
     db.refresh(db_reception)
     return db_reception
 
-def create_collection(db: Session, collection: schemas.CollectionRecord):
-    db_collection = models.Collection(retrieval_date=collection.retrieval_date, weight=collection.weight, centra_id=collection.centra_id)
+def create_collection(db: Session, collection: schemas.CollectionRecord, user: models.Users):
+    db_collection = models.Collection(retrieval_date=collection.retrieval_date, weight=collection.weight, centra_id=user.centra_unit)
     db.add(db_collection)
     db.commit()
     db.refresh(db_collection)
     return db_collection
 
 
-def create_wet_leaves(db: Session, wet_leaves: schemas.WetLeavesRecord):
-    db_wet_leaves = models.Wet(retrieval_date=wet_leaves.retrieval_date, weight=wet_leaves.weight, centra_id=wet_leaves.centra_id)
+def create_wet_leaves(db: Session, wet_leaves: schemas.WetLeavesRecord, user: models.Users):
+    db_wet_leaves = models.Wet(retrieval_date=wet_leaves.retrieval_date, weight=wet_leaves.weight, centra_id=user.centra_unit)
     db.add(db_wet_leaves)
     db.commit()
     db.refresh(db_wet_leaves)
     return db_wet_leaves
 
-def create_dry_leaves(db: Session, dry_leaves: schemas.DryLeavesRecord):
-    db_dry_leaves = models.Dry(dried_date=dry_leaves.dried_date, weight=dry_leaves.weight)
+def create_dry_leaves(db: Session, dry_leaves: schemas.DryLeavesRecord, user: models.Users):
+    db_dry_leaves = models.Dry(dried_date=dry_leaves.dried_date, weight=dry_leaves.weight, centra_id=user.centra_unit)
     db.add(db_dry_leaves)
     db.commit()
     db.refresh(db_dry_leaves)
     return db_dry_leaves
 
-def create_flour(db: Session, flour: schemas.FlourRecord):
-    db_flour = models.Flour(**flour.model_dump())
+def create_flour(db: Session, flour: schemas.FlourRecord, user: models.Users):
+    db_flour = models.Flour(**flour.model_dump(), centra_id=user.centra_unit)
     db.add(db_flour)
     db.commit()
     db.refresh(db_flour)

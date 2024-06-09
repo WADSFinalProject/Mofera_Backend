@@ -169,6 +169,7 @@ class Flour(Base):
     __tablename__ = "flour"
 
     id = Column(Integer, primary_key=True, index=True)
+    floured_date = Column(Date)
     weight = Column(Float)
     centra_id = Column(Integer, ForeignKey("centra.id"))
 

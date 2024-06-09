@@ -17,7 +17,7 @@ from pydantic import BaseModel
 import schemas
 import crud
 
-from auth import role_access, get_db
+from auth import role_access, get_db, get_current_user
 from models import Users
 from roles_enum import RoleEnum
 
@@ -45,22 +45,22 @@ logger = logging.getLogger(__name__)
 
 @router.post("/new_collection", dependencies=[Depends(role_access(RoleEnum.centra))])
 def add_collection(collection: schemas.CollectionRecord, db: db_dependecy):
-    db_collection = crud.create_collection()
+    db_collection = crud.create_collection(db=db, collection=collection, user=get_current_user())
     return JSONResponse(content={"detail": "Collection record added successfully"}, status_code=status.HTTP_201_CREATED)
 
 @router.post("/new_wet_leaves", dependencies=[Depends(role_access(RoleEnum.centra))])
 def add_wet_leaves(wet_leaves: schemas.WetLeavesRecord, db: db_dependecy):
-    db_collection = crud.create_wet_leaves(db=db, wet_leaves=wet_leaves)
+    db_collection = crud.create_wet_leaves(db=db, wet_leaves=wet_leaves, user=get_current_user())
     return JSONResponse(content={"detail": "Wet leaves record added successfully"}, status_code=status.HTTP_201_CREATED)
 
 @router.post("/new_dry_leaves", dependencies=[Depends(role_access(RoleEnum.centra))])
 def add_dry_leaves(dry_leaves: schemas.DryLeavesRecord, db: db_dependecy):
-    db_dry = crud.create_dry_leaves(db=db, dry_leaves=dry_leaves)
+    db_dry = crud.create_dry_leaves(db=db, dry_leaves=dry_leaves, user=get_current_user())
     return JSONResponse(content={"detail": "Dry leaves record added successfully"}, status_code=status.HTTP_201_CREATED)
 
 @router.post("/new_flour", dependencies=[Depends(role_access(RoleEnum.centra))])
 def add_flour(flour: schemas.FlourRecord, db: db_dependecy):
-    db_flour = crud.create_flour(db=db, flour=flour)
+    db_flour = crud.create_flour(db=db, flour=flour, user=get_current_user())
     return JSONResponse(content={"detail": "Flour record added successfully"}, status_code=status.HTTP_201_CREATED)
 
 @router.get("/collection", dependencies=[Depends(role_access(RoleEnum.centra))])
