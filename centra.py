@@ -88,6 +88,11 @@ def get_dry_leaves(db: db_dependecy):
     db_dry_leaves = crud.get_dry_leaves(db=db)
     return db_dry_leaves
 
+@router.get("/dry_leaves_mobile", dependencies=[Depends(role_access(RoleEnum.centra))])
+def get_dry_leaves(filter: schemas.DryLeavesMobile, db: db_dependecy):
+    db_dry_leaves = crud.get_dry_leaves_mobile(db=db, filter=filter)
+    return db_dry_leaves
+
 @router.get("/flour", dependencies=[Depends(role_access(RoleEnum.centra))])
 def get_flour(db: db_dependecy):
     db_flour = crud.get_flour(db=db)

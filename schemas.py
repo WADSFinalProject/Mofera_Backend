@@ -20,6 +20,9 @@ class VerificationEmailRequest(BaseModel):
 class DatetimeRecord(BaseModel):
     datetime: datetime
 
+class DateRecord(BaseModel):
+    date: date
+
 class CollectionBase(BaseModel):
     weight: float
 
@@ -61,6 +64,9 @@ class DryLeaves(DryLeavesBase):
     class Config:
         from_attributes = True
 
+class DryLeavesMobile(DateRecord):
+
+    interval: str
 
 class FlourBase(BaseModel):
 
@@ -136,7 +142,7 @@ class CheckpointDataBase(BaseModel):
 
 class CheckpointDataRecord(CheckpointDataBase):
 
-    arrival_date: date
+    arrival_datetime: datetime
     package_ids: list[int]
     note : Optional[str] = None
 

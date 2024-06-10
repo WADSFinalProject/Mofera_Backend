@@ -35,11 +35,11 @@ def get_checkpoints(db: Session, skip: int = 0, limit: int = 10, date_filter: da
     query = db.query(models.CheckpointData)
     if date_filter:
         if before:
-            query = query.filter(models.CheckpointData.arrival_date < date_filter)
+            query = query.filter(models.CheckpointData.arrival_datetime < date_filter)
         elif after:
-            query = query.filter(models.CheckpointData.arrival_date > date_filter)
+            query = query.filter(models.CheckpointData.arrival_datetime > date_filter)
         else:
-            query = query.filter(models.CheckpointData.arrival_date == date_filter)
+            query = query.filter(models.CheckpointData.arrival_datetime == date_filter)
     return query.offset(skip).limit(limit).all()
 
 def update_checkpoint(db: Session, id: int):
@@ -69,7 +69,7 @@ def get_wet_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
             query = query.filter(models.Wet.retrieval_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
-def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None, between: bool = None):
     query = db.query(models.Dry)
     if date_filter:
         if before:
@@ -78,6 +78,20 @@ def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
             query = query.filter(models.Dry.floured_datetime > date_filter)
         else:
             query = query.filter(models.Dry.floured_datetime == date_filter)
+    return query.offset(skip).limit(limit).all()
+
+def get_dry_leaves_mobile(db: Session, filter: schemas.DryLeavesMobile, skip: int = 0, limit: int = 10):
+    query = db.query(models.Dry)
+    query.filter(models.Dry.floured_datetime >= filter.date)
+    date_range = date(day = 0)
+    if filter.interval == "1d":
+        date_range = date(day=1)
+    elif filter.interval == "3d":
+        date_range = date(day=3)
+    elif filter.interval == "7d":
+        date_range = date(day=7)
+    
+    query.filter(models.Dry.floured_datetime-filter.date <= date_range)
     return query.offset(skip).limit(limit).all()
 
 def get_flour(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
@@ -182,7 +196,7 @@ def create_wet_leaves(db: Session, wet_leaves: schemas.WetLeavesRecord, user: mo
     db.refresh(db_wet_leaves)
     return db_wet_leaves
 
-def create_dry_leaves(db: Session, dry_leaves: schemas.DryLeavesRecord):
+def create_dry_leaves(db: Session, dry_leaves: schemas.DryLeavesRecord, user: models.Users):
     db_dry_leaves = models.Dry(dried_date=dry_leaves.dried_date, weight=dry_leaves.weight)
     db.add(db_dry_leaves)
     db.commit()
