@@ -44,14 +44,9 @@ db_dependecy = Annotated[Session, Depends(get_db)]
 logger = logging.getLogger(__name__)
 
 @router.post("/new_collection", dependencies=[Depends(role_access(RoleEnum.centra))])
-<<<<<<< HEAD
-def add_collection(collection: schemas.CollectionRecord, db: db_dependecy):
-    db_collection = crud.create_collection(db, collection)
-=======
 def add_collection(collection: schemas.CollectionRecord, db: db_dependecy, current_user: Users = Depends(get_current_user)):
     db_collection = crud.create_collection(db=db, collection=collection, user=current_user)
     crud.create_centra_notifications(db=db, message=f"New collection added - Collection#{db_collection.id}", id=current_user.centra_unit)
->>>>>>> origin/main
     return JSONResponse(content={"detail": "Collection record added successfully"}, status_code=status.HTTP_201_CREATED)
 
 @router.post("/new_wet_leaves", dependencies=[Depends(role_access(RoleEnum.centra))])
