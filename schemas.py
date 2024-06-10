@@ -68,6 +68,7 @@ class FlourBase(BaseModel):
 
 
 class FlourRecord(FlourBase):
+    dried_date: date
     floured_date: date
 
 
