@@ -23,8 +23,6 @@ bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class UpdateProfileRequest(BaseModel):
     username: str = Field(..., min_length=1, max_length=500)
     email: EmailStr
-    centra_unit: Optional[str] = None
-    current_password: str = Field(..., min_length=1)
     new_password: Optional[str] = Field(None, min_length=6, max_length=500)
     confirm_password: Optional[str] = Field(None, min_length=6, max_length=500)
 
@@ -35,10 +33,6 @@ async def update_profile(
     db: Session = Depends(db_dependency),
     current_user: Users = Depends(get_current_user)
 ):
-    # Verify current password
-    if not bcrypt_context.verify(update_request.current_password, current_user.hashed_password):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="Current password is incorrect")
 
     # Ensure new password and confirm password match
     if update_request.new_password and update_request.new_password != update_request.confirm_password:
