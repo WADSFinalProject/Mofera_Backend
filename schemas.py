@@ -25,7 +25,6 @@ class CollectionBase(BaseModel):
 
 class CollectionRecord(CollectionBase):
     retrieval_date: date
-    centra_id: int
 
 class WetLeavesBase(BaseModel):
     weight: float
@@ -33,7 +32,6 @@ class WetLeavesBase(BaseModel):
 
 class WetLeavesRecord(WetLeavesBase):
     retrieval_date: date
-    centra_id: int
 
 
 class WetLeaves(WetLeavesBase):
@@ -81,16 +79,8 @@ class Flour(FlourBase):
     class Config:
         from_attributes = True
 
-# class FlourRequest():
-
-#     id: Optional[int]
-#     date: Optional[date]
-#     interval: Optional[timedelta]
-#     mode: Optional[int]
-
 class packageRecord(BaseModel):
     
-    centra_id: int
     weight: float
     shipping_id: Optional[int]=None
     status: int=0
