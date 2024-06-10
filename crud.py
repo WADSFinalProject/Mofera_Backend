@@ -92,17 +92,17 @@ def get_flour(db: Session, skip: int = 0, limit: int = 10, date_filter: date = N
     return query.offset(skip).limit(limit).all()
 
 def wash_wet_leaves(db: Session, id: int, date: schemas.DatetimeRecord):
-    query = db.query(models.Wet).filter(models.Wet.id == id).update({models.Wet.washed_datetime: date.date})
+    query = db.query(models.Wet).filter(models.Wet.id == id).update({models.Wet.washed_datetime: date.datetime})
     db.commit()
     return query
 
 def dry_wet_leaves(db: Session, id: int, date: schemas.DatetimeRecord):
-    query = db.query(models.Wet).filter(models.Wet.id == id).update({models.Wet.dried_datetime: date.date})
+    query = db.query(models.Wet).filter(models.Wet.id == id).update({models.Wet.dried_datetime: date.datetime})
     db.commit()
     return query
 
 def flour_dry_leaves(db: Session, id: int, date: schemas.DatetimeRecord):
-    query = db.query(models.Dry).filter(models.Dry.id == id).update({models.Dry.floured_datetime: date.date})
+    query = db.query(models.Dry).filter(models.Dry.id == id).update({models.Dry.floured_datetime: date.datetime})
     db.commit()
     return query
 

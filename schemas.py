@@ -18,7 +18,7 @@ class VerificationEmailRequest(BaseModel):
 
 
 class DatetimeRecord(BaseModel):
-    date: datetime
+    datetime: datetime
 
 class CollectionBase(BaseModel):
     weight: float
