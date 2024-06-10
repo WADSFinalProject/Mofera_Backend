@@ -45,7 +45,7 @@ logger = logging.getLogger(__name__)
 
 @router.post("/new_collection", dependencies=[Depends(role_access(RoleEnum.centra))])
 def add_collection(collection: schemas.CollectionRecord, db: db_dependecy):
-    db_collection = crud.create_collection()
+    db_collection = crud.create_collection(db, collection)
     return JSONResponse(content={"detail": "Collection record added successfully"}, status_code=status.HTTP_201_CREATED)
 
 @router.post("/new_wet_leaves", dependencies=[Depends(role_access(RoleEnum.centra))])

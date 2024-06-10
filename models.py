@@ -22,8 +22,7 @@ class Users(Base):
     email = Column(String(length=500), unique=True)
     hashed_password = Column(String(length=500))
     role = Column(SQLEnum(RoleEnum), default=RoleEnum.centra, nullable=False)
-    centra_unit = Column(String(length=500), nullable=True)  # Add this line
-
+    centra_unit = Column(String(length=500), ) 
     refresh_tokens = relationship(
         "RefreshToken", back_populates="users", order_by="RefreshToken.expires_at.desc()"
     )
@@ -105,7 +104,7 @@ class RescaledPackageData(Base):
     id = Column(Integer, primary_key=True, index=True)
     package_id = Column(Integer, ForeignKey("package_data.id"))
     rescaled_weight = Column(Float)
-    materials_to_cover = Column(String)
+    materials_to_cover = Column(String(500))
 
     original_package = relationship(
         "PackageData", backref="rescaled_package_data")
