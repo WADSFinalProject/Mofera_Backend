@@ -182,8 +182,8 @@ def create_wet_leaves(db: Session, wet_leaves: schemas.WetLeavesRecord, user: mo
     db.refresh(db_wet_leaves)
     return db_wet_leaves
 
-def create_dry_leaves(db: Session, dry_leaves: schemas.DryLeavesRecord, user: models.Users):
-    db_dry_leaves = models.Dry(dried_date=dry_leaves.dried_date, weight=dry_leaves.weight, centra_id=user.centra_unit)
+def create_dry_leaves(db: Session, dry_leaves: schemas.DryLeavesRecord):
+    db_dry_leaves = models.Dry(dried_date=dry_leaves.dried_date, weight=dry_leaves.weight)
     db.add(db_dry_leaves)
     db.commit()
     db.refresh(db_dry_leaves)
