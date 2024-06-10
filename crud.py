@@ -3,7 +3,7 @@ from sqlalchemy import and_, or_
 import models
 import schemas
 import datetime
-from datetime import date
+from datetime import date, timedelta
 from fastapi import HTTPException
 from typing import Union
 
@@ -80,18 +80,18 @@ def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
             query = query.filter(models.Dry.floured_datetime == date_filter)
     return query.offset(skip).limit(limit).all()
 
-def get_dry_leaves_mobile(db: Session, filter: schemas.DryLeavesMobile, skip: int = 0, limit: int = 10):
+def get_dry_leaves_mobile(db: Session, date_origin:date, interval: str, skip: int = 0, limit: int = 10):
     query = db.query(models.Dry)
-    query.filter(models.Dry.floured_datetime >= filter.date)
-    date_range = date(day = 0)
-    if filter.interval == "1d":
-        date_range = date(day=1)
-    elif filter.interval == "3d":
-        date_range = date(day=3)
-    elif filter.interval == "7d":
-        date_range = date(day=7)
+    query = query.filter(models.Dry.dried_date >= date_origin)
+    date_range = timedelta(days = 0)
+    if interval == "1d":
+        date_range = timedelta(days=1)
+    elif interval == "3d":
+        date_range = timedelta(days=3)
+    elif interval == "7d":
+        date_range = timedelta(days=7)
     
-    query.filter(models.Dry.floured_datetime-filter.date <= date_range)
+    query = query.filter(models.Dry.dried_date <= date_range+date_origin)
     return query.offset(skip).limit(limit).all()
 
 def get_flour(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):

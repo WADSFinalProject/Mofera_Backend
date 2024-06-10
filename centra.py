@@ -7,7 +7,7 @@ from database import SessionLocal
 from models import Users, RefreshToken
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from jose import jwt, JWTError
 from typing import Optional
 import logging
@@ -42,12 +42,6 @@ def get_db():
 db_dependecy = Annotated[Session, Depends(get_db)]
 
 logger = logging.getLogger(__name__)
-
-@router.post("/new_collection", dependencies=[Depends(role_access(RoleEnum.centra))])
-def add_collection(collection: schemas.CollectionRecord, db: db_dependecy, current_user: Users = Depends(get_current_user)):
-    db_collection = crud.create_collection(db=db, collection=collection, user=current_user)
-    crud.create_centra_notifications(db=db, message=f"New collection added - Collection#{db_collection.id}", id=current_user.centra_unit)
-    return JSONResponse(content={"detail": "Collection record added successfully"}, status_code=status.HTTP_201_CREATED)
 
 @router.post("/new_wet_leaves", dependencies=[Depends(role_access(RoleEnum.centra))])
 def add_wet_leaves(wet_leaves: schemas.WetLeavesRecord, db: db_dependecy, current_user: Users = Depends(get_current_user)):
@@ -89,8 +83,8 @@ def get_dry_leaves(db: db_dependecy):
     return db_dry_leaves
 
 @router.get("/dry_leaves_mobile", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_dry_leaves(filter: schemas.DryLeavesMobile, db: db_dependecy):
-    db_dry_leaves = crud.get_dry_leaves_mobile(db=db, filter=filter)
+def get_dry_leaves_mobile(date: date, interval: str, db: db_dependecy):
+    db_dry_leaves = crud.get_dry_leaves_mobile(db=db, date_origin=date, interval=interval)
     return db_dry_leaves
 
 @router.get("/flour", dependencies=[Depends(role_access(RoleEnum.centra))])
