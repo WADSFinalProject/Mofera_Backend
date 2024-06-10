@@ -1,7 +1,7 @@
 from typing import Optional
 
 from pydantic import BaseModel
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 
 
@@ -17,8 +17,8 @@ class VerificationEmailRequest(BaseModel):
     verification_link: str
 
 
-class DateRecord(BaseModel):
-    date: date
+class DatetimeRecord(BaseModel):
+    date: datetime
 
 class CollectionBase(BaseModel):
     weight: float
@@ -106,8 +106,7 @@ class ShippingInfoRecord(BaseModel):
     total_packages: int
     total_weight: float
     expedition: str
-    departure_date: date
-    estimated_time: date
+    departure_datetime: datetime
 
 class ShippingDataRecord(BaseModel):
 

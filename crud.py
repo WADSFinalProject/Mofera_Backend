@@ -73,11 +73,11 @@ def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
     query = db.query(models.Dry)
     if date_filter:
         if before:
-            query = query.filter(models.Dry.floured_date < date_filter)
+            query = query.filter(models.Dry.floured_datetime < date_filter)
         elif after:
-            query = query.filter(models.Dry.floured_date > date_filter)
+            query = query.filter(models.Dry.floured_datetime > date_filter)
         else:
-            query = query.filter(models.Dry.floured_date == date_filter)
+            query = query.filter(models.Dry.floured_datetime == date_filter)
     return query.offset(skip).limit(limit).all()
 
 def get_flour(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
@@ -91,18 +91,18 @@ def get_flour(db: Session, skip: int = 0, limit: int = 10, date_filter: date = N
             query = query.filter(models.Flour.finish_time == date_filter)
     return query.offset(skip).limit(limit).all()
 
-def wash_wet_leaves(db: Session, id: int, date: schemas.DateRecord):
-    query = db.query(models.Wet).filter(models.Wet.id == id).update({models.Wet.washed_date: date.date})
+def wash_wet_leaves(db: Session, id: int, date: schemas.DatetimeRecord):
+    query = db.query(models.Wet).filter(models.Wet.id == id).update({models.Wet.washed_datetime: date.date})
     db.commit()
     return query
 
-def dry_wet_leaves(db: Session, id: int, date: schemas.DateRecord):
-    query = db.query(models.Wet).filter(models.Wet.id == id).update({models.Wet.dried_date: date.date})
+def dry_wet_leaves(db: Session, id: int, date: schemas.DatetimeRecord):
+    query = db.query(models.Wet).filter(models.Wet.id == id).update({models.Wet.dried_datetime: date.date})
     db.commit()
     return query
 
-def flour_dry_leaves(db: Session, id: int, date: schemas.DateRecord):
-    query = db.query(models.Dry).filter(models.Dry.id == id).update({models.Dry.floured_date: date.date})
+def flour_dry_leaves(db: Session, id: int, date: schemas.DatetimeRecord):
+    query = db.query(models.Dry).filter(models.Dry.id == id).update({models.Dry.floured_datetime: date.date})
     db.commit()
     return query
 

@@ -115,8 +115,7 @@ class Shipping(Base):
     __tablename__ = "shipping"
 
     id = Column(Integer, primary_key=True, index=True)
-    departure_date = Column(Date)
-    estimated_time = Column(Date, nullable=True)
+    departure_datetime = Column(DateTime)
     total_weight = Column(Float)
     total_packages = Column(Integer)
     expedition = Column(String (500))
@@ -148,8 +147,8 @@ class Wet(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     retrieval_date = Column(Date)
-    washed_date = Column(Date, nullable=True)
-    dried_date = Column(Date, nullable=True)
+    washed_datetime = Column(DateTime, nullable=True)
+    dried_datetime = Column(DateTime, nullable=True)
     weight = Column(Float)
     centra_id = Column(Integer, ForeignKey("centra.id"))
 
@@ -161,7 +160,7 @@ class Dry(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     weight = Column(Float)
-    floured_date = Column(Date, nullable=True)
+    floured_datetime = Column(DateTime, nullable=True)
     centra_id = Column(Integer, ForeignKey("centra.id"))
 
 
@@ -169,6 +168,7 @@ class Flour(Base):
     __tablename__ = "flour"
 
     id = Column(Integer, primary_key=True, index=True)
+    dried_date = Column(Date)
     floured_date = Column(Date)
     weight = Column(Float)
     centra_id = Column(Integer, ForeignKey("centra.id"))
