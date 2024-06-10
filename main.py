@@ -20,7 +20,6 @@ import crud
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from auth import router
 
 
 import logging
