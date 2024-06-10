@@ -238,6 +238,13 @@ def create_centra_notifications(db: Session, message:str, id:int):
     db.refresh(db_centra_notif)
     return db_centra_notif
 
+def create_GuardHarbor_notifications(db: Session, message:str, id:int):
+    db_guard_harbor_notif = models.GuardHarborNotification(message=message, date=datetime.datetime.now(), centra_id=id)
+    db.add(db_guard_harbor_notif)
+    db.commit()
+    db.refresh(db_guard_harbor_notif)
+    return db_guard_harbor_notif
+
 def create_reception_packages(db: Session, reception_packages: schemas.ReceptionPackageRecord):
     db_reception_packages = models.ReceptionPackage(**reception_packages.model_dump())
     db.add(db_reception_packages)

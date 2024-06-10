@@ -131,3 +131,4 @@ def add_shipping_info(shipping:schemas.ShippingInfoRecord, db:db_dependecy):
     for id in shipping.packages:
         crud.update_package_shipping_detail(db=db, id=id, shipping_id=db_shipping.id, )
     crud.create_centra_notifications(db=db, message=f"New shipping added - Shipping#{db_shipping.id}")
+    crud.create_GuardHarbor_notifications(db=db, message=f"New shipping added - Shipping#{db_shipping.id}")
