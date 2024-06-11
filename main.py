@@ -14,13 +14,12 @@ from sqlalchemy.orm import Session
 from typing import List, Annotated
 from pydantic import BaseModel, Field
 from database import SessionLocal, engine
-from datetime import date
-from models import Users
-import crud
+# from datetime import date
+# from models import Users
+# import crud
 
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from auth import router
 
 
 import logging

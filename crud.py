@@ -3,7 +3,7 @@ from sqlalchemy import and_, or_
 import models
 import schemas
 import datetime
-from datetime import date
+from datetime import date, timedelta
 from fastapi import HTTPException
 from typing import Union
 
@@ -35,11 +35,11 @@ def get_checkpoints(db: Session, skip: int = 0, limit: int = 10, date_filter: da
     query = db.query(models.CheckpointData)
     if date_filter:
         if before:
-            query = query.filter(models.CheckpointData.arrival_date < date_filter)
+            query = query.filter(models.CheckpointData.arrival_datetime < date_filter)
         elif after:
-            query = query.filter(models.CheckpointData.arrival_date > date_filter)
+            query = query.filter(models.CheckpointData.arrival_datetime > date_filter)
         else:
-            query = query.filter(models.CheckpointData.arrival_date == date_filter)
+            query = query.filter(models.CheckpointData.arrival_datetime == date_filter)
     return query.offset(skip).limit(limit).all()
 
 def update_checkpoint(db: Session, id: int):
@@ -69,7 +69,7 @@ def get_wet_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
             query = query.filter(models.Wet.retrieval_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
-def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None, between: bool = None):
     query = db.query(models.Dry)
     if date_filter:
         if before:
@@ -78,6 +78,20 @@ def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
             query = query.filter(models.Dry.floured_datetime > date_filter)
         else:
             query = query.filter(models.Dry.floured_datetime == date_filter)
+    return query.offset(skip).limit(limit).all()
+
+def get_dry_leaves_mobile(db: Session, date_origin:date, interval: str, skip: int = 0, limit: int = 10):
+    query = db.query(models.Dry)
+    query = query.filter(models.Dry.dried_date >= date_origin)
+    date_range = timedelta(days = 0)
+    if interval == "1d":
+        date_range = timedelta(days=1)
+    elif interval == "3d":
+        date_range = timedelta(days=3)
+    elif interval == "7d":
+        date_range = timedelta(days=7)
+    
+    query = query.filter(models.Dry.dried_date <= date_range+date_origin)
     return query.offset(skip).limit(limit).all()
 
 def get_flour(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
@@ -223,6 +237,13 @@ def create_centra_notifications(db: Session, message:str, id:int):
     db.commit()
     db.refresh(db_centra_notif)
     return db_centra_notif
+
+def create_GuardHarbor_notifications(db: Session, message:str, id:int):
+    db_guard_harbor_notif = models.GuardHarborNotification(message=message, date=datetime.datetime.now(), centra_id=id)
+    db.add(db_guard_harbor_notif)
+    db.commit()
+    db.refresh(db_guard_harbor_notif)
+    return db_guard_harbor_notif
 
 def create_reception_packages(db: Session, reception_packages: schemas.ReceptionPackageRecord):
     db_reception_packages = models.ReceptionPackage(**reception_packages.model_dump())
