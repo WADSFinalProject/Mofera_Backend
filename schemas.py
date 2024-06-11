@@ -50,13 +50,13 @@ class DryLeavesBase(BaseModel):
 
 
 class DryLeavesRecord(DryLeavesBase):
-    dried_date: date
+    dried_date: datetime
 
 
 class DryLeaves(DryLeavesBase):
 
     id: int
-    dried_date: date
+    dried_date: datetime
 
     class Config:
         from_attributes = True
