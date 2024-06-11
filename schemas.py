@@ -53,7 +53,7 @@ class DryLeavesBase(BaseModel):
 
 
 class DryLeavesRecord(DryLeavesBase):
-    dried_date: datetime
+    dried_date: date
 
 
 class DryLeaves(DryLeavesBase):
