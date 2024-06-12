@@ -177,7 +177,7 @@ class CentraNotification(Base):
     __tablename__ = "centra_notification"
 
     id = Column(Integer, primary_key=True, index=True)
-    message = Column(String)
+    message = Column(String(500))
     date = Column(DateTime)
     centra_id = Column(Integer)
 
@@ -185,7 +185,7 @@ class GuardHarborNotification(Base):
     __tablename__ = "guard_harbor_notification"
 
     id = Column(Integer, primary_key=True, index=True)
-    message = Column(String)
+    message = Column(String(500))
     date = Column(DateTime)
     centra_id = Column(Integer)
 
