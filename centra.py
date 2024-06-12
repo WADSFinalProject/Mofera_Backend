@@ -77,6 +77,11 @@ def get_wet_leaves(db: db_dependecy):
     db_wet_leaves = crud.get_wet_leaves(db=db)
     return db_wet_leaves
 
+@router.get("/washed_wet_leaves", dependencies=[Depends(role_access(RoleEnum.centra))])
+def get_washed_wet_leaves(db: db_dependecy):
+    db_washed_wet_leaves = crud.get_washed_wet_leaves(db=db)
+    return db_washed_wet_leaves
+
 @router.get("/dry_leaves", dependencies=[Depends(role_access(RoleEnum.centra))])
 def get_dry_leaves(db: db_dependecy):
     db_dry_leaves = crud.get_dry_leaves(db=db)
@@ -97,6 +102,11 @@ def get_packages(db: db_dependecy):
     db_packages = crud.get_packages(db=db)
     return db_packages
 
+@router.get("/packages_status", dependencies=[Depends(role_access(RoleEnum.centra))])
+def get_packages_with_status(status: int, db: db_dependecy):
+    db_packages = crud.get_packages_by_status(db=db, status=status)
+    return db_packages
+
 @router.get("/notification", dependencies=[Depends(role_access(RoleEnum.centra))])
 def get_packages(db: db_dependecy):
     db_packages = crud.get_centra_notifications(db=db)
@@ -115,9 +125,9 @@ def dry_wet_leaves(id:int, date:schemas.DatetimeRecord, db: db_dependecy, curren
     return
 
 @router.put("/flour_dry_leaves/{id}", dependencies=[Depends(role_access(RoleEnum.centra))])
-def flour_dry_leaves(id:int, date:schemas.DatetimeRecord, db: db_dependecy):
+def flour_dry_leaves(id:int, date:schemas.DatetimeRecord, db: db_dependecy, current_user: Users = Depends(get_current_user)):
     query = crud.flour_dry_leaves(db=db, id=id, date=date)
-    crud.create_centra_notifications(db=db, message=f"Flouring Dry#{id}")
+    crud.create_centra_notifications(db=db, message=f"Flouring Dry#{id}", id=current_user.centra_unit)
     return 
 
 @router.post("/add_package", dependencies=[Depends(role_access(RoleEnum.centra))])

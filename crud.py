@@ -69,6 +69,17 @@ def get_wet_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
             query = query.filter(models.Wet.retrieval_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
+def get_washed_wet_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+    query = db.query(models.Wet).filter(models.Wet.washed_datetime <= datetime.datetime.now())
+    if date_filter:
+        if before:
+            query = query.filter(models.Wet.retrieval_date < date_filter)
+        elif after:
+            query = query.filter(models.Wet.retrieval_date > date_filter)
+        else:
+            query = query.filter(models.Wet.retrieval_date == date_filter)
+    return query.offset(skip).limit(limit).all()
+
 def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None, between: bool = None):
     query = db.query(models.Dry)
     if date_filter:
@@ -118,6 +129,10 @@ def dry_wet_leaves(db: Session, id: int, date: schemas.DatetimeRecord):
 def flour_dry_leaves(db: Session, id: int, date: schemas.DatetimeRecord):
     query = db.query(models.Dry).filter(models.Dry.id == id).update({models.Dry.floured_datetime: date.datetime})
     db.commit()
+    return query
+
+def get_packages_by_status(db: Session, status: int):
+    query = db.query(models.PackageData).filter(models.PackageData.status == status).all()
     return query
 
 def get_packages(db: Session):
