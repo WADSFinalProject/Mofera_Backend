@@ -90,8 +90,8 @@ def get_wet_statistics(db:db_dependecy, p: int = 0, year:int=0, month:int=0, day
     total_weight = sum(wet.weight for wet in db_wet)
     return {"total_weight": total_weight}
 
-@router.get("/quick_get_quick_stats", dependencies=[Depends(role_access(RoleEnum.xyz))])
-def quick_get_quick_statistics(db:db_dependecy, interval:str, date:date = date.today(), slice:int = 6):
+@router.get("/quick_dry_quick_stats", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def quick_dry_quick_statistics(db:db_dependecy, interval:str, date:date = date.today(), slice:int = 6):
     label = list()
     data = list()
     if interval == "daily":
