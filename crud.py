@@ -69,8 +69,8 @@ def get_wet_leaves(db: Session, skip: int = 0, limit: int = 20, year: int = 0, m
     elif year:
         query = query.filter(extract("year", models.Wet.retrieval_date) == year)
     
-    elif month:
-        query = query.filter(extract("month", models.Wet.retrieval_date) == month)
+        if month:
+            query = query.filter(extract("month", models.Wet.retrieval_date) == month)
 
     if skip:
         query = query.offset(skip)
@@ -113,8 +113,8 @@ def get_dry_leaves_by_dried_date(db: Session, skip: int = 0, limit: int = 20, ye
     elif year:
         query = query.filter(extract("year", models.Dry.dried_date) == year)
     
-    elif month:
-        query = query.filter(extract("month", models.Dry.dried_date) == month)
+        if month:
+            query = query.filter(extract("month", models.Dry.dried_date) == month)
 
     if skip:
         query = query.offset(skip)
@@ -160,8 +160,8 @@ def get_flour_by_floured_date(db: Session, skip: int = 0, limit: int = 20, year:
     elif year:
         query = query.filter(extract("year", models.Flour.floured_date) == year)
     
-    elif month:
-        query = query.filter(extract("month", models.Flour.floured_date) == month)
+        if month:
+            query = query.filter(extract("month", models.Flour.floured_date) == month)
 
     if skip:
         query = query.offset(skip)
