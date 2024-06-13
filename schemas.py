@@ -90,7 +90,7 @@ class packageRecord(BaseModel):
     
     weight: float
     shipping_id: Optional[int]=None
-    status: int=0
+    status: int =0
     exp_date: date
 
 class PackageCreate(packageRecord):
@@ -189,6 +189,7 @@ class GuardHarborNotificationData(GuardHarborNotification):
 
 class RescaledRecord(BaseModel):
     weight: float
+    material: str
 
 class ReceptionPackageBase(BaseModel):
     package_id: list[int]

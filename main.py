@@ -1,10 +1,10 @@
-
-
 import models
 import auth
 import centra
 import guard_harbor
 import usersmanagement
+import edit_profile
+import xyz
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, APIRouter, Request, status
 # from apscheduler.schedulers.background import BackgroundScheduler
@@ -48,6 +48,7 @@ app.include_router(auth.router)
 app.include_router(centra.router)
 app.include_router(guard_harbor.router)
 app.include_router(usersmanagement.router)
+app.include_router(xyz.router)
 
 origins = [
     "http://localhost:5173",

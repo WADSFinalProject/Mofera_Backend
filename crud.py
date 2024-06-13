@@ -1,5 +1,6 @@
 from sqlalchemy.orm import Session
 from sqlalchemy import and_, or_
+from sqlalchemy.sql import extract
 import models
 import schemas
 import datetime
@@ -58,16 +59,27 @@ def get_collection(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
             query = query.filter(models.Collection.retrieval_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
-def get_wet_leaves(db: Session, skip: int = 0, limit: int = 20, date_filter: date = None, before: bool = None, after: bool = None):
+def get_wet_leaves(db: Session, skip: int = 0, limit: int = 20, year: int = 0, month: int = 0, day: int = 0, filter: str = ""):
     query = db.query(models.Wet)
-    if date_filter:
-        if before:
-            query = query.filter(models.Wet.retrieval_date < date_filter)
-        elif after:
-            query = query.filter(models.Wet.retrieval_date > date_filter)
-        else:
-            query = query.filter(models.Wet.retrieval_date == date_filter)
-    return query.offset(skip).limit(limit).all()
+    if year and month and day:
+        if filter == "w":
+            query = query.filter(models.Wet.retrieval_date.between(date(year, month, day)-timedelta(days=date(year, month, day).isoweekday()-1), date(year, month, day) + timedelta(days=7-date(year, month, day).isoweekday())))
+        else: query = query.filter(models.Wet.retrieval_date == date(year, month, day))
+
+    elif year:
+        query = query.filter(extract("year", models.Wet.retrieval_date) == year)
+    
+    elif month:
+        query = query.filter(extract("month", models.Wet.retrieval_date) == month)
+
+    if skip:
+        query = query.offset(skip)
+    
+    if limit:
+        query = query.limit(limit)        
+    
+
+    return query.all()
 
 def get_washed_wet_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Wet).filter(models.Wet.washed_datetime <= datetime.datetime.now())
@@ -90,6 +102,28 @@ def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
         else:
             query = query.filter(models.Dry.floured_datetime == date_filter)
     return query.offset(skip).limit(limit).all()
+
+def get_dry_leaves_by_dried_date(db: Session, skip: int = 0, limit: int = 20, year: int = 0, month: int = 0, day: int = 0, filter: str = ""):
+    query = db.query(models.Dry)
+    if year and month and day:
+        if filter == "w":
+            query = query.filter(models.Dry.dried_date.between(date(year, month, day)-timedelta(days=date(year, month, day).isoweekday()-1), date(year, month, day) + timedelta(days=7-date(year, month, day).isoweekday())))
+        else: query = query.filter(models.Dry.dried_date == date(year, month, day))
+
+    elif year:
+        query = query.filter(extract("year", models.Dry.dried_date) == year)
+    
+    elif month:
+        query = query.filter(extract("month", models.Dry.dried_date) == month)
+
+    if skip:
+        query = query.offset(skip)
+    
+    if limit:
+        query = query.limit(limit)        
+    
+
+    return query.all()
 
 def get_dry_leaves_mobile(db: Session, date_origin:date, interval: str, skip: int = 0, limit: int = 10):
     query = db.query(models.Dry)
@@ -115,6 +149,28 @@ def get_flour(db: Session, skip: int = 0, limit: int = 10, date_filter: date = N
         else:
             query = query.filter(models.Flour.finish_time == date_filter)
     return query.offset(skip).limit(limit).all()
+
+def get_flour_by_floured_date(db: Session, skip: int = 0, limit: int = 20, year: int = 0, month: int = 0, day: int = 0, filter: str = ""):
+    query = db.query(models.Flour)
+    if year and month and day:
+        if filter == "w":
+            query = query.filter(models.Flour.floured_date.between(date(year, month, day)-timedelta(days=date(year, month, day).isoweekday()-1), date(year, month, day) + timedelta(days=7-date(year, month, day).isoweekday())))
+        else: query = query.filter(models.Flour.floured_date == date(year, month, day))
+
+    elif year:
+        query = query.filter(extract("year", models.Flour.floured_date) == year)
+    
+    elif month:
+        query = query.filter(extract("month", models.Flour.floured_date) == month)
+
+    if skip:
+        query = query.offset(skip)
+    
+    if limit:
+        query = query.limit(limit)        
+    
+
+    return query.all()
 
 def wash_wet_leaves(db: Session, id: int, date: schemas.DatetimeRecord):
     query = db.query(models.Wet).filter(models.Wet.id == id).update({models.Wet.washed_datetime: date.datetime})
@@ -150,7 +206,7 @@ def get_shipping(db: Session, skip: int = 0, limit: int = 10, date_filter: date 
             query = query.filter(models.Shipping.departure_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
-def get_centra_notifications(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, filter: Union[str, None] = None):
+def get_centra_notifications(db: Session, skip: int = 0, limit: int = 100, date_filter: date = None, filter: Union[str, None] = None):
     query = db.query(models.CentraNotification)
 
     if filter == "before":
@@ -182,7 +238,7 @@ def update_package_shipping_detail(db:Session, id:int, shipping_id:int):
     db.refresh(db_package)
     return db_package
 
-def update_rescaled(db:Session, id:int, rescaled_weight: float):
+def update_rescaled(db:Session, id:int, rescaled_weight: float, material: str):
     db_rescaled = db.query(models.PackageData).filter(models.PackageData.id == id)
     setattr(db_rescaled, "weight", rescaled_weight)
     db.commit()
@@ -266,6 +322,13 @@ def create_reception_packages(db: Session, reception_packages: schemas.Reception
     db.commit()
     db.refresh(db_reception_packages)
     return db_reception_packages
+
+def create_rescaled_package_data(db: Session, package_id: int, rescaled_weight: float, materials_to_cover: str):
+    db_rescaled_package_data = models.RescaledPackageData(package_id=package_id, rescaled_weight=rescaled_weight, materials_to_cover=materials_to_cover)
+    db.add(db_rescaled_package_data)
+    db.commit()
+    db.refresh(db_rescaled_package_data)
+    return db_rescaled_package_data
 
 def update_wet_leaves(db: Session, wet_leaves_id: int, wet_leaves: schemas.WetLeavesBase):
     db_wet_leaves = get_wet_leaves_by_id(db, wet_leaves_id)
