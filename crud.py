@@ -58,7 +58,7 @@ def get_collection(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
             query = query.filter(models.Collection.retrieval_date == date_filter)
     return query.offset(skip).limit(limit).all()
 
-def get_wet_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+def get_wet_leaves(db: Session, skip: int = 0, limit: int = 20, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Wet)
     if date_filter:
         if before:
@@ -131,9 +131,9 @@ def flour_dry_leaves(db: Session, id: int, date: schemas.DatetimeRecord):
     db.commit()
     return query
 
-def get_packages_by_status(db: Session, status: int):
-    query = db.query(models.PackageData).filter(models.PackageData.status == status).all()
-    return query
+def get_packages_by_status(db: Session, status: int, skip:int = 0, limit:int = 30):
+    query = db.query(models.PackageData).filter(models.PackageData.status == status)
+    return query.offset(skip).limit(limit).all()
 
 def get_packages(db: Session):
     query = db.query(models.PackageData).all()
@@ -239,8 +239,8 @@ def create_checkpoint(db: Session, checkpoint: schemas.CheckpointDataRecord):
     db.refresh(db_checkpoint)
     return db_checkpoint
 
-def create_package(db: Session, package: schemas.PackageCreate):
-    db_package = models.PackageData(**package.model_dump())
+def create_package(db: Session, package: schemas.PackageCreate, id):
+    db_package = models.PackageData(**package.model_dump(), centra_id=id)
     db.add(db_package)
     db.commit()
     db.refresh(db_package)

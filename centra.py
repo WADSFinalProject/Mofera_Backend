@@ -108,7 +108,7 @@ def get_packages_with_status(status: int, db: db_dependecy):
     return db_packages
 
 @router.get("/notification", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_packages(db: db_dependecy):
+def get_notification(db: db_dependecy):
     db_packages = crud.get_centra_notifications(db=db)
     return db_packages
 
@@ -132,7 +132,7 @@ def flour_dry_leaves(id:int, date:schemas.DatetimeRecord, db: db_dependecy, curr
 
 @router.post("/add_package", dependencies=[Depends(role_access(RoleEnum.centra))])
 def add_package(record:schemas.PackageCreate, db:db_dependecy, current_user: Users = Depends(get_current_user)):
-    query = crud.create_package(db=db, package=record)
+    query = crud.create_package(db=db, package=record, id=current_user.centra_unit)
     crud.create_centra_notifications(db=db, message=f"New package added - Package#{query.id}", id=current_user.centra_unit)
 
 @router.post("/add_shipping", dependencies=[Depends(role_access(RoleEnum.centra))])
