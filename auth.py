@@ -72,6 +72,7 @@ async def create_user(create_user_request: CreateUserRequest, db: Session = Depe
         )
         db.add(create_user_model)
         db.commit()
+        
 
         access_token = create_user_token(
             username=create_user_request.username,

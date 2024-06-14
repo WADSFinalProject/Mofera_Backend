@@ -281,8 +281,8 @@ def create_flour(db: Session, flour: schemas.FlourRecord, user: models.Users):
     db.refresh(db_flour)
     return db_flour
 
-def create_shipping(db: Session, shipping: schemas.ShippingInfoRecord):
-    db_shipping = models.Shipping(**shipping.model_dump(exclude={"packages"}))
+def create_shipping(db: Session, shipping: schemas.ShippingInfoRecord, id):
+    db_shipping = models.Shipping(**shipping.model_dump(exclude={"packages"}), centra_id=id)
     db.add(db_shipping)
     db.commit()
     db.refresh(db_shipping)
