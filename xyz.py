@@ -171,7 +171,7 @@ def get_flour_statistics(db:db_dependecy, p: int = 0, year:int=0, month:int=0, d
 @router.get("/get_flour_datas", dependencies=[Depends(role_access(RoleEnum.xyz))])
 def get_flour_datas(db:db_dependecy, p: int = 0):
 
-    db_flour = crud.get_flour_leaves(db=db, limit=50,)
+    db_flour = crud.get_flour(db=db, limit=50,)
     return db_flour
 
 @router.put("/rescale/{id}", dependencies=[Depends(role_access(RoleEnum.xyz))])
