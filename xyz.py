@@ -83,14 +83,13 @@ def quick_get_wet_statistics(db:db_dependecy, interval:str, date:date = date.tod
 
     return {"label":label, "data":data}
 
-@router.get("/get_wet_stats", dependencies=[Depends(role_access(RoleEnum.xyz))])
-def get_wet_statistics(db:db_dependecy, p: int = 0, year:int=0, month:int=0, day:int=0, filter:str=""):
+@router.get("/get_wet_datas", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_wet_datas(db:db_dependecy, p: int = 0):
 
-    db_wet = crud.get_wet_leaves(db=db, limit=0, year=year, month=month, day=day, filter=filter)
-    total_weight = sum(wet.weight for wet in db_wet)
-    return {"total_weight": total_weight}
+    db_wet = crud.get_wet_leaves(db=db, limit=50,)
+    return db_wet
 
-@router.get("/quick_dry_quick_stats", dependencies=[Depends(role_access(RoleEnum.xyz))])
+@router.get("/quick_get_dry_stats", dependencies=[Depends(role_access(RoleEnum.xyz))])
 def quick_dry_quick_statistics(db:db_dependecy, interval:str, date:date = date.today(), slice:int = 6):
     label = list()
     data = list()
@@ -123,12 +122,11 @@ def quick_dry_quick_statistics(db:db_dependecy, interval:str, date:date = date.t
 
     return {"label":label, "data":data}
 
-@router.get("/get_dry_stats", dependencies=[Depends(role_access(RoleEnum.xyz))])
-def get_dry_statistics(db:db_dependecy, p: int = 0, year:int=0, month:int=0, day:int=0, filter:str=""):
+@router.get("/get_dry_datas", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_dry_datas(db:db_dependecy, p: int = 0):
 
-    db_dry = crud.get_dry_leaves_by_dried_date(db=db, limit=0, year=year, month=month, day=day, filter=filter)
-    total_weight = sum(flour.weight for flour in db_dry)
-    return {"total_weight": total_weight}
+    db_dry = crud.get_dry_leaves(db=db, limit=50,)
+    return db_dry
 
 @router.get("/quick_get_flour_stats", dependencies=[Depends(role_access(RoleEnum.xyz))])
 def quick_get_flour_statistics(db:db_dependecy, interval:str, date:date = date.today(), slice:int = 6):
@@ -169,6 +167,12 @@ def get_flour_statistics(db:db_dependecy, p: int = 0, year:int=0, month:int=0, d
     db_flour = crud.get_flour_by_floured_date(db=db, limit=0, year=year, month=month, day=day, filter=filter)
     total_weight = sum(flour.weight for flour in db_flour)
     return {"total_weight": total_weight}
+
+@router.get("/get_flour_datas", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_flour_datas(db:db_dependecy, p: int = 0):
+
+    db_flour = crud.get_flour_leaves(db=db, limit=50,)
+    return db_flour
 
 @router.put("/rescale/{id}", dependencies=[Depends(role_access(RoleEnum.xyz))])
 def rescale_package(id: int, rescale: schemas.RescaledRecord, db:db_dependecy):
