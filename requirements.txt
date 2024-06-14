@@ -9,3 +9,4 @@ SQLAlchemy==2.0.29
 mysql-connector-python==8.4.0
 psycopg2-binary==2.9.9
 apscheduler==3.8.0
+PyMySql
