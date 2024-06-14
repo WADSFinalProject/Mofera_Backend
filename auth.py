@@ -34,9 +34,8 @@ class CreateUserRequest(BaseModel):
     username: str
     email: str
     password: str
-    role: RoleEnum  
+    role: RoleEnum
     centra_unit: Optional[str] = None
-
 
 
 class Token(BaseModel):
@@ -68,7 +67,7 @@ async def create_user(create_user_request: CreateUserRequest, db: Session = Depe
             email=create_user_request.email,
             hashed_password=bcrypt_context.hash(create_user_request.password),
             role=create_user_request.role,
-            centra_unit=create_user_request.centra_unit if create_user_request.role == RoleEnum.centra else None  
+            centra_unit=create_user_request.centra_unit if create_user_request.role == RoleEnum.centra else None
         )
         db.add(create_user_model)
         db.commit()
@@ -95,7 +94,6 @@ async def create_user(create_user_request: CreateUserRequest, db: Session = Depe
     except Exception as e:
         logger.error(f"Unexpected error creating user: {e}")
         raise HTTPException(status_code=500, detail="Unexpected error")
-
 
 
 def create_refresh_token(user_id: int, expires_delta: Optional[timedelta] = None):
@@ -183,7 +181,6 @@ def create_user_token(username: str, email: str, user_id: int, role: str, expire
     return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
 
 
-# Role-based access control (RBAC) middleware function
 def role_access(required_role: RoleEnum):
     def role_checker(user: Users = Depends(get_current_user)):
         if user.role != required_role:
@@ -193,7 +190,7 @@ def role_access(required_role: RoleEnum):
             )
     return role_checker
 
-# Get current user from token so that the role_access can track the logged in user
+
 def get_current_user(token: str = Depends(auth2_bearer), db: Session = Depends(get_db)):
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -215,3 +212,39 @@ def get_current_user(token: str = Depends(auth2_bearer), db: Session = Depends(g
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token"
         )
+
+
+@router.post("/logout", status_code=status.HTTP_204_NO_CONTENT)
+async def logout_user(db: Session = Depends(get_db), current_user: Users = Depends(get_current_user)):
+    try:
+        db.query(RefreshToken).filter(
+            RefreshToken.user_id == current_user.id).delete()
+        db.commit()
+        response = JSONResponse(content={"detail": "Successfully logged out"})
+        response.delete_cookie(key="token")
+        return response
+    except SQLAlchemyError as e:
+        logger.error(f"Error logging out user: {e}")
+        db.rollback()
+        raise HTTPException(status_code=500, detail="Failed to log out")
+    except Exception as e:
+        logger.error(f"Unexpected error during logout: {e}")
+        raise HTTPException(
+            status_code=500, detail="Unexpected error during logout")
+
+
+@router.delete("/delete", response_class=JSONResponse)
+async def delete_user(current_user: Users = Depends(get_current_user), db: Session = Depends(get_db)):
+    try:
+        current_user.is_active = False
+        db.commit()
+
+        response = JSONResponse(
+            content={"detail": "Account deactivated successfully"})
+        response.delete_cookie(key="token")
+        return response
+    except Exception as e:
+        logger.error(f"Unexpected error during account deactivation: {e}")
+        db.rollback()
+        raise HTTPException(
+            status_code=500, detail="Unexpected error during account deactivation")

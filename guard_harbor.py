@@ -66,3 +66,18 @@ def add_checkpoint_data(checkpoint: schemas.CheckpointDataRecord, db: db_depende
 def delete_checkpoint_data(checkpoint_id: int, db: db_dependecy):
     db_checkpoint = crud.delete_checkpoint(db=db, checkpoint_id=checkpoint_id)
     return JSONResponse(content={"detail": "Checkpoint data deleted successfully"}, status_code=status.HTTP_200_OK)
+
+@router.get("/shipping", dependencies=[Depends(role_access(RoleEnum.GuardHarbor))])
+def get_shipping(db: db_dependecy):
+    db_shipping = crud.get_shipping(db=db)
+    return db_shipping
+
+@router.get("/packages", dependencies=[Depends(role_access(RoleEnum.GuardHarbor))])
+def get_packages(db: db_dependecy):
+    db_packages = crud.get_packages(db=db)
+    return db_packages
+
+@router.get("/checkpoints", dependencies=[Depends(role_access(RoleEnum.GuardHarbor))])
+def get_checkpoint(db: db_dependecy):
+    db_checkpoint = crud.get_checkpoints(db=db)
+    return db_checkpoint

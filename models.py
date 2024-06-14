@@ -22,10 +22,10 @@ class Users(Base):
     email = Column(String(length=500), unique=True)
     hashed_password = Column(String(length=500))
     role = Column(SQLEnum(RoleEnum), default=RoleEnum.centra, nullable=False)
-    centra_unit = Column(String(length=500), ) 
+    centra_unit = Column(String(length=500))
+    is_active = Column(Boolean, default=True)  # New column for soft deletion
     refresh_tokens = relationship(
-        "RefreshToken", back_populates="users", order_by="RefreshToken.expires_at.desc()"
-    )
+        "RefreshToken", back_populates="users", cascade="all, delete")
 
 
 class RefreshToken(Base):
@@ -38,15 +38,13 @@ class RefreshToken(Base):
 
     users = relationship("Users", back_populates="refresh_tokens")
 
-# Centra, etc
-
 
 class Appointment(Base):
     __tablename__ = "appointment"
 
     id = Column(Integer, primary_key=True, index=True)
     shipping_id = Column(Integer, ForeignKey("shipping.id"))
-    receiver_name = Column(String (500))
+    receiver_name = Column(String(500))
     pickup_time = Column(Date)
 
     shipping = relationship("Shipping", backref="appointment")
@@ -56,7 +54,7 @@ class Centra(Base):
     __tablename__ = "centra"
 
     id = Column(Integer, primary_key=True, index=True)
-    location = Column(String (500))
+    location = Column(String(500))
     # reception_package_id = Column(Integer, ForeignKey("reception_package.id"))
 
     # reception_package_centra = relationship(
@@ -79,7 +77,7 @@ class Expedition(Base):
     __tablename__ = "expedition"
 
     id = Column(Integer, primary_key=True, index=True)
-    name = Column(String (500))
+    name = Column(String(500))
 
 
 class PackageData(Base):
@@ -94,8 +92,10 @@ class PackageData(Base):
     reception_id = Column(Integer, nullable=True)
     exp_date = Column(Date, nullable=True)
 
-    centra_owner = relationship("Centra", backref="package_data", foreign_keys=[centra_id])
-    shipping = relationship("Shipping", backref="packages", foreign_keys=[shipping_id])
+    centra_owner = relationship(
+        "Centra", backref="package_data", foreign_keys=[centra_id])
+    shipping = relationship(
+        "Shipping", backref="packages", foreign_keys=[shipping_id])
 
 
 class RescaledPackageData(Base):
@@ -117,7 +117,7 @@ class Shipping(Base):
     departure_datetime = Column(DateTime)
     total_weight = Column(Float)
     total_packages = Column(Integer)
-    expedition = Column(String (500))
+    expedition = Column(String(500))
     # expedition_id = Column(Integer, ForeignKey("expedition.id"))
 
     # expedition = relationship("Expedition", backref="shipping")
@@ -127,7 +127,7 @@ class GuardHarbor(Base):
     __tablename__ = "guard_harbor"
 
     id = Column(Integer, primary_key=True, index=True)
-    location = Column(String (500))
+    location = Column(String(500))
     checkpoint_id = Column(Integer, ForeignKey("checkpoint_data.id"))
 
     checkpoint = relationship("CheckpointData", backref="guard_harbor")
@@ -141,6 +141,7 @@ class Collection(Base):
     weight = Column(Float)
     centra_id = Column(Integer, ForeignKey("centra.id"))
 
+
 class Wet(Base):
     __tablename__ = "wet"
 
@@ -151,7 +152,7 @@ class Wet(Base):
     weight = Column(Float)
     centra_id = Column(Integer, ForeignKey("centra.id"))
 
-    centra = relationship("Centra", backref="wet")
+    # centra = relationship("Centra", backref="wet")
 
 
 class Dry(Base):
@@ -173,6 +174,7 @@ class Flour(Base):
     weight = Column(Float)
     centra_id = Column(Integer)
 
+
 class CentraNotification(Base):
     __tablename__ = "centra_notification"
 
@@ -181,6 +183,7 @@ class CentraNotification(Base):
     date = Column(DateTime)
     centra_id = Column(Integer)
 
+
 class GuardHarborNotification(Base):
     __tablename__ = "guard_harbor_notification"
 
@@ -188,6 +191,7 @@ class GuardHarborNotification(Base):
     message = Column(String(500))
     date = Column(DateTime)
     centra_id = Column(Integer)
+
 
 class ReceptionPackage(Base):
     __tablename__ = "reception_packages"
@@ -198,5 +202,7 @@ class ReceptionPackage(Base):
     receival_date = Column(Date)
     centra_id = Column(Integer, ForeignKey("centra.id"))
 
-    centra = relationship("Centra", backref="reception_packages", foreign_keys=[centra_id])
-    package = relationship("PackageData", backref="reception_packages", foreign_keys=[package_id])
+    centra = relationship(
+        "Centra", backref="reception_packages", foreign_keys=[centra_id])
+    package = relationship(
+        "PackageData", backref="reception_packages", foreign_keys=[package_id])
