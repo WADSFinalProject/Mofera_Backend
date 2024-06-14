@@ -1,10 +1,12 @@
+
+
 import models
 import auth
 import centra
 import guard_harbor
 import usersmanagement
+import profiles
 import edit_profile
-import xyz
 import uvicorn
 from fastapi import FastAPI, Depends, HTTPException, APIRouter, Request, status
 # from apscheduler.schedulers.background import BackgroundScheduler
@@ -48,12 +50,14 @@ app.include_router(auth.router)
 app.include_router(centra.router)
 app.include_router(guard_harbor.router)
 app.include_router(usersmanagement.router)
-app.include_router(xyz.router)
+app.include_router(profiles.router)
+app.include_router(edit_profile.router)
+""" app.include_router(profilecontent.router) """
 
 origins = [
     "http://localhost:5173",
     "http://localhost:5174",
-    "https://mofera-frontend-seven.vercel.app"
+    "https://mofera-frontend-six.vercel.app"
     # add other origins here
 
 
@@ -86,7 +90,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 # @app.on_event("startup")
 # def startup_event():
 #     scheduler = BackgroundScheduler()
-#     scheduler.add_job(check_expired_packages, 'interval', minutes=60) 
+#     scheduler.add_job(check_expired_packages, 'interval', minutes=60)
 #     scheduler.start()
 
 # def check_expired_packages():
@@ -110,4 +114,4 @@ async def user(user: None, db: db_dependency):
     return {"User": user}
 
 if __name__ == '__main__':
-    uvicorn.run("main:app", host = "127.0.0.1", reload=True)
+    uvicorn.run("main:app", host="127.0.0.1", reload=True)
