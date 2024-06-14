@@ -5,14 +5,12 @@ from typing import Annotated
 
 from database import SessionLocal
 from models import Users
-from auth import get_current_user  # Assuming get_current_user is in auth.py
+from auth import get_current_user
 
 router = APIRouter(
     prefix="/profile",
     tags=["profile"]
 )
-
-# Dependency to get DB Session
 
 
 def get_db():
@@ -24,8 +22,6 @@ def get_db():
 
 
 db_dependency = Annotated[Session, Depends(get_db)]
-
-# Pydantic Model for the response
 
 
 class UserProfile(BaseModel):
