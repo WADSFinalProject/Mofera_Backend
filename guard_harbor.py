@@ -76,3 +76,8 @@ def get_shipping(db: db_dependecy):
 def get_packages(db: db_dependecy):
     db_packages = crud.get_packages(db=db)
     return db_packages
+
+@router.get("/checkpoints", dependencies=[Depends(role_access(RoleEnum.GuardHarbor))])
+def get_checkpoint(db: db_dependecy):
+    db_checkpoint = crud.get_checkpoints(db=db)
+    return db_checkpoint
