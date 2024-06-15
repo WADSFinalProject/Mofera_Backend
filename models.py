@@ -163,7 +163,7 @@ class Dry(Base):
     weight = Column(Float)
     dried_date = Column(Date)
     floured_datetime = Column(DateTime, nullable=True)
-    centra_id = Column(Integer, ForeignKey("centra.id"))
+    centra_id = Column(Integer)
 
 
 class Flour(Base):
@@ -173,7 +173,7 @@ class Flour(Base):
     dried_date = Column(Date)
     floured_date = Column(Date)
     weight = Column(Float)
-    centra_id = Column(Integer, ForeignKey("centra.id"))
+    centra_id = Column(Integer)
 
 
 class CentraNotification(Base):

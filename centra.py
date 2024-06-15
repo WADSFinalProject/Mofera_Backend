@@ -140,10 +140,5 @@ def add_shipping_info(shipping:schemas.ShippingInfoRecord, db:db_dependecy, curr
     db_shipping = crud.create_shipping(db=db, shipping=shipping, id=current_user.centra_unit)
     for id in shipping.packages:
         crud.update_package_shipping_detail(db=db, id=id, shipping_id=db_shipping.id )
-    crud.create_centra_notifications(db=db, message=f"New shipping added - Shipping #{db_shipping.id}", id=current_user.centra_unit)
+    crud.create_centra_notifications(db=db, message=f"New shipping added - Shipping#{db_shipping.id}", id=current_user.centra_unit)
     crud.create_GuardHarbor_notifications(db=db, message=f"New shipping added - Shipping#{db_shipping.id}", id=current_user.centra_unit)
-
-@router.get("/shipping", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_shipping(db: db_dependecy):
-    db_shipping = crud.get_shipping(db=db)
-    return db_shipping

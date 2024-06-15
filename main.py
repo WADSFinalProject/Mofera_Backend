@@ -6,6 +6,7 @@ import centra
 import guard_harbor
 import usersmanagement
 import profiles
+import admin
 import edit_profile
 import xyz
 import uvicorn
@@ -54,7 +55,6 @@ app.include_router(usersmanagement.router)
 app.include_router(profiles.router)
 app.include_router(edit_profile.router)
 app.include_router(xyz.router)
-""" app.include_router(profilecontent.router) """
 
 origins = [
     "http://localhost:5173",
