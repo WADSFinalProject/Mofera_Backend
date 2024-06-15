@@ -43,6 +43,12 @@ def get_checkpoints(db: Session, skip: int = 0, limit: int = 10, date_filter: da
             query = query.filter(models.CheckpointData.arrival_datetime == date_filter)
     return query.offset(skip).limit(limit).all()
 
+def get_users(db: Session, skip: int = 0, limit: int = 10000):
+    return db.query(models.Users).offset(skip).limit(limit).all()
+
+def get_centra(db: Session, skip: int = 0, limit: int = 50):
+    return db.query(models.Centra).offset(skip).limit(limit).all()
+
 def update_checkpoint(db: Session, id: int):
 
     update_package_status(db, id, 2)

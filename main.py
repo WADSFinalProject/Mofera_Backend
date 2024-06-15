@@ -3,6 +3,7 @@ import auth
 import centra
 import guard_harbor
 import usersmanagement
+import admin
 import edit_profile
 import xyz
 import uvicorn
@@ -49,6 +50,7 @@ app.include_router(centra.router)
 app.include_router(guard_harbor.router)
 app.include_router(usersmanagement.router)
 app.include_router(xyz.router)
+app.include_router(admin.router)
 
 origins = [
     "http://localhost:5173",
