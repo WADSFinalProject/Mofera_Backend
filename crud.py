@@ -43,12 +43,6 @@ def get_checkpoints(db: Session, skip: int = 0, limit: int = 10, date_filter: da
             query = query.filter(models.CheckpointData.arrival_datetime == date_filter)
     return query.offset(skip).limit(limit).all()
 
-def get_users(db: Session, skip: int = 0, limit: int = 10000):
-    return db.query(models.Users).offset(skip).limit(limit).all()
-
-def get_centra(db: Session, skip: int = 0, limit: int = 50):
-    return db.query(models.Centra).offset(skip).limit(limit).all()
-
 def update_checkpoint(db: Session, id: int):
 
     update_package_status(db, id, 2)
@@ -244,8 +238,8 @@ def update_package_shipping_detail(db:Session, id:int, shipping_id:int):
     db.refresh(db_package)
     return db_package
 
-def update_rescaled(db:Session, id:int, rescaled_weight: float, material: str):
-    db_rescaled = db.query(models.PackageData).filter(models.PackageData.id == id)
+def update_rescaled(db:Session, id:int, rescaled_weight: float):
+    db_rescaled = db.query(models.PackageData).filter(models.PackageData.id == id).first()
     setattr(db_rescaled, "weight", rescaled_weight)
     db.commit()
     db.refresh(db_rescaled)
