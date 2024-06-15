@@ -1,7 +1,7 @@
 # forget_password.py
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, validator
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
@@ -21,7 +21,6 @@ router = APIRouter(
 bcrypt_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 # Utility functions
-
 
 def create_reset_token(user_id: int, expires_delta: timedelta = timedelta(hours=1)):
     encode = {"id": user_id}
@@ -50,17 +49,22 @@ def send_reset_email(email: str, reset_link: str):
 
 # Request models
 
-
 class PasswordResetRequest(BaseModel):
     email: str
 
 
 class PasswordReset(BaseModel):
     token: str
-    new_password: str
+    new_password: str = Field(..., min_length=8)
+    confirm_password: str = Field(..., min_length=8)
+
+    @validator("confirm_password")
+    def passwords_match(cls, v, values, **kwargs):
+        if 'new_password' in values and v != values['new_password']:
+            raise ValueError("Passwords do not match")
+        return v
 
 # Endpoints
-
 
 @router.post("/forgot-password", status_code=status.HTTP_200_OK)
 async def forgot_password(current_user: Users = Depends(get_current_user), db: Session = Depends(get_db)):
@@ -76,7 +80,6 @@ async def forgot_password(current_user: Users = Depends(get_current_user), db: S
 
     return {"message": "Password reset email sent"}
 
-
 @router.post("/reset-password", status_code=status.HTTP_200_OK)
 async def reset_password(request: PasswordReset, db: Session = Depends(get_db)):
     try:
@@ -91,6 +94,7 @@ async def reset_password(request: PasswordReset, db: Session = Depends(get_db)):
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
 
+        # Passwords match validation is handled by Pydantic validator
         user.hashed_password = bcrypt_context.hash(request.new_password)
         db.commit()
 
