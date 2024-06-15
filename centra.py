@@ -97,9 +97,14 @@ def get_flour(db: db_dependecy):
     db_flour = crud.get_flour(db=db)
     return db_flour
 
+# @router.get("/packages", dependencies=[Depends(role_access(RoleEnum.centra))])
+# def get_packages(db: db_dependecy):
+#     db_packages = crud.get_packages(db=db)
+#     return db_packages
+
 @router.get("/packages", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_packages(db: db_dependecy):
-    db_packages = crud.get_packages(db=db)
+def get_packages(db: db_dependecy, current_user: Users = Depends(get_current_user)):
+    db_packages = crud.get_packages(db=db, centra_id=int(current_user.centra_unit))
     return db_packages
 
 @router.get("/packages_status", dependencies=[Depends(role_access(RoleEnum.centra))])
@@ -142,3 +147,8 @@ def add_shipping_info(shipping:schemas.ShippingInfoRecord, db:db_dependecy, curr
         crud.update_package_shipping_detail(db=db, id=id, shipping_id=db_shipping.id )
     crud.create_centra_notifications(db=db, message=f"New shipping added - Shipping#{db_shipping.id}", id=current_user.centra_unit)
     crud.create_GuardHarbor_notifications(db=db, message=f"New shipping added - Shipping#{db_shipping.id}", id=current_user.centra_unit)
+
+@router.get("/shippings", dependencies=[Depends(role_access(RoleEnum.centra))])
+def get_shipping(db: db_dependecy):
+    db_shippings = crud.get_shipping(db=db)
+    return db_shippings

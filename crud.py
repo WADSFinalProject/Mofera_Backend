@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Query
 from sqlalchemy import and_, or_
 from sqlalchemy.sql import extract
 import models
@@ -6,7 +6,7 @@ import schemas
 import datetime
 from datetime import date, timedelta
 from fastapi import HTTPException
-from typing import Union
+from typing import Optional, Union
 
 def get_wet_leaves_by_id(db: Session, wet_leaves_id: int):
     return db.query(models.Wet).filter(models.Wet.id == wet_leaves_id).first()
@@ -53,6 +53,11 @@ def update_checkpoint(db: Session, id: int):
 
     update_package_status(db, id, 2)
     return
+
+def filter_by_centra_id(query: Query, model, centra_id):
+    if centra_id is not None:
+        query = query.filter(model.centra_unit == centra_id)
+    return query
 
 def get_collection(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Dry)
@@ -197,9 +202,14 @@ def get_packages_by_status(db: Session, status: int, skip:int = 0, limit:int = 3
     query = db.query(models.PackageData).filter(models.PackageData.status == status)
     return query.offset(skip).limit(limit).all()
 
-def get_packages(db: Session):
-    query = db.query(models.PackageData).all()
-    return query
+# def get_packages(db: Session):
+#     query = db.query(models.PackageData).all()
+#     return query
+
+def get_packages(db: Session, centra_id: int):
+    query = db.query(models.PackageData)
+    query = filter_by_centra_id(query, models.PackageData, centra_id)
+    return query.all()
 
 def get_shipping(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Shipping)
