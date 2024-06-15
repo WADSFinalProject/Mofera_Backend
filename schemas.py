@@ -114,6 +114,7 @@ class ShippingInfoRecord(BaseModel):
     total_weight: float
     expedition: str
     departure_datetime: datetime
+    eta_datetime: datetime
 
 class ShippingDataRecord(BaseModel):
 
