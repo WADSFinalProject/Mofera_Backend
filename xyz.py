@@ -174,6 +174,35 @@ def get_flour_datas(db:db_dependecy, p: int = 0):
     db_flour = crud.get_flour(db=db, limit=50,)
     return db_flour
 
+@router.get("/search_package_rescale", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def search_package_rescale(db:db_dependecy, s: str = ""):
+    db_package = crud.get_package_by_id(db=db, package_id=s)
+    print(db_package)
+    if db_package is None or db_package.status != 2:
+        return None
+    
+    return db_package
+
+@router.get("/get_shipment_notification", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_shipping_notification(db:db_dependecy, p: int = 0):
+
+    db_shipping = crud.get_shipping(db=db, limit=50,)
+    return [{
+        "id":shipping.id,
+        "shipper":f"Centra {shipping.centra_id}",
+        "timestamp": shipping.departure_datetime,
+    } for shipping in db_shipping]
+
+@router.get("/get_arrival_notification", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_arrival_notification(db:db_dependecy, p: int = 0):
+
+    db_checkpoint = crud.get_checkpoints(db=db, limit=50,)
+    return [{
+        "id":checkpoint.id,
+        "shipper":f"Centra {crud.get_shipping_by_id(db=db, shipping_id=checkpoint.shipping_id).centra_id}",
+        "timestamp": checkpoint.arrival_datetime,
+    } for checkpoint in db_checkpoint]
+
 @router.put("/rescale/{id}", dependencies=[Depends(role_access(RoleEnum.xyz))])
 def rescale_package(id: int, rescale: schemas.RescaledRecord, db:db_dependecy):
     db_rescaled_package = crud.update_rescaled(db=db, id=id, rescaled_weight=rescale.weight)

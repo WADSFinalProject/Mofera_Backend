@@ -96,14 +96,6 @@ async def create_user(create_user_request: CreateUserRequest, db: Session = Depe
         raise HTTPException(status_code=500, detail="Unexpected error")
 
 
-def create_refresh_token(user_id: int, expires_delta: Optional[timedelta] = None):
-    encode = {'id': user_id}
-    if expires_delta:
-        expires = datetime.utcnow() + expires_delta
-        encode.update({'exp': expires})
-    return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
-
-
 @router.post("/refresh", response_model=Token)
 async def refresh_access_token(refresh_token: str, db: Session = Depends(get_db)):
     try:
@@ -133,9 +125,13 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
     try:
         user = authenticate_user(form_data.username, form_data.password, db)
         if not user:
+            logger.error("Authentication failed for user: %s",
+                         form_data.username)
             raise HTTPException(
-                status_code=status.HTTP_401_UNAUTHORIZED, detail='Incorrect email or password'
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail='Incorrect email or password'
             )
+
         access_token = create_user_token(
             username=user.username,
             email=user.email,
@@ -160,10 +156,32 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         response.set_cookie(key="token", value=access_token, httponly=True)
         return response
 
-    except Exception as e:
-        logger.error(f"Unexpected error during login: {e}")
+    except HTTPException as http_exc:
+        logger.error(
+            f"HTTP error during login for user {form_data.username}: {http_exc.detail}")
+        raise http_exc  # Re-raise the same exception to propagate the correct status code and detail
+    except SQLAlchemyError as e:
+        logger.error(
+            f"Database error during login for user {form_data.username}: {e}")
+        db.rollback()
         raise HTTPException(
-            status_code=500, detail="Unexpected error during login")
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Database error"
+        )
+    except JWTError as e:
+        logger.error(
+            f"JWT error during login for user {form_data.username}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid token"
+        )
+    except Exception as e:
+        logger.error(
+            f"Unexpected error during login for user {form_data.username}: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Unexpected error during login"
+        )
 
 
 def authenticate_user(email: str, password: str, db):
@@ -175,6 +193,14 @@ def authenticate_user(email: str, password: str, db):
 
 def create_user_token(username: str, email: str, user_id: int, role: str, expires_delta: Optional[timedelta] = None):
     encode = {'sub': username, 'email': email, 'id': user_id, 'role': role}
+    if expires_delta:
+        expires = datetime.utcnow() + expires_delta
+        encode.update({'exp': expires})
+    return jwt.encode(encode, SECRET_KEY, algorithm=ALGORITHM)
+
+
+def create_refresh_token(user_id: int, expires_delta: Optional[timedelta] = None):
+    encode = {'id': user_id}
     if expires_delta:
         expires = datetime.utcnow() + expires_delta
         encode.update({'exp': expires})
