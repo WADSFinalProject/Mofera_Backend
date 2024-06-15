@@ -118,6 +118,7 @@ class Shipping(Base):
     total_weight = Column(Float)
     total_packages = Column(Integer)
     expedition = Column(String(500))
+    centra_id = Column(Integer)
     # expedition_id = Column(Integer, ForeignKey("expedition.id"))
 
     # expedition = relationship("Expedition", backref="shipping")
