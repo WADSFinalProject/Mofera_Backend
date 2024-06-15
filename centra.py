@@ -68,33 +68,33 @@ def add_flour(flour: schemas.FlourRecord, db: db_dependecy, current_user: Users 
     return JSONResponse(content={"detail": "Flour record added successfully"}, status_code=status.HTTP_201_CREATED)
 
 @router.get("/collection", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_collection(db: db_dependecy):
-    db_collection = crud.get_collection(db=db)
+def get_collection(db: db_dependecy, current_user: Users = Depends(get_current_user)):
+    db_collection = crud.get_collection(db=db, centra_id=int(current_user.centra_unit))
     return db_collection
 
 @router.get("/wet_leaves", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_wet_leaves(db: db_dependecy):
-    db_wet_leaves = crud.get_wet_leaves(db=db)
+def get_wet_leaves(db: db_dependecy, current_user: Users = Depends(get_current_user)):
+    db_wet_leaves = crud.get_wet_leaves(db=db, centra_id=int(current_user.centra_unit))
     return db_wet_leaves
 
 @router.get("/washed_wet_leaves", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_washed_wet_leaves(db: db_dependecy):
-    db_washed_wet_leaves = crud.get_washed_wet_leaves(db=db)
+def get_washed_wet_leaves(db: db_dependecy, current_user: Users = Depends(get_current_user)):
+    db_washed_wet_leaves = crud.get_washed_wet_leaves(db=db, centra_id=int(current_user.centra_unit))
     return db_washed_wet_leaves
 
 @router.get("/dry_leaves", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_dry_leaves(db: db_dependecy):
-    db_dry_leaves = crud.get_dry_leaves(db=db)
+def get_dry_leaves(db: db_dependecy, current_user: Users = Depends(get_current_user)):
+    db_dry_leaves = crud.get_dry_leaves(db=db, centra_id=int(current_user.centra_unit))
     return db_dry_leaves
 
 @router.get("/dry_leaves_mobile", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_dry_leaves_mobile(date: date, interval: str, db: db_dependecy):
-    db_dry_leaves = crud.get_dry_leaves_mobile(db=db, date_origin=date, interval=interval)
+def get_dry_leaves_mobile(date: date, interval: str, db: db_dependecy, current_user: Users = Depends(get_current_user)):
+    db_dry_leaves = crud.get_dry_leaves_mobile(db=db, date_origin=date, interval=interval, centra_id=int(current_user.centra_unit))
     return db_dry_leaves
 
 @router.get("/flour", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_flour(db: db_dependecy):
-    db_flour = crud.get_flour(db=db)
+def get_flour(db: db_dependecy, current_user: Users = Depends(get_current_user)):
+    db_flour = crud.get_flour(db=db, centra_id=int(current_user.centra_unit))
     return db_flour
 
 # @router.get("/packages", dependencies=[Depends(role_access(RoleEnum.centra))])
@@ -108,13 +108,13 @@ def get_packages(db: db_dependecy, current_user: Users = Depends(get_current_use
     return db_packages
 
 @router.get("/packages_status", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_packages_with_status(status: int, db: db_dependecy):
-    db_packages = crud.get_packages_by_status(db=db, status=status)
+def get_packages_with_status(status: int, db: db_dependecy, current_user: Users = Depends(get_current_user)):
+    db_packages = crud.get_packages_by_status(db=db, status=status, centra_id=int(current_user.centra_unit) )
     return db_packages
 
 @router.get("/notification", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_notification(db: db_dependecy):
-    db_packages = crud.get_centra_notifications(db=db)
+def get_notification(db: db_dependecy, current_user: Users = Depends(get_current_user)):
+    db_packages = crud.get_centra_notifications(db=db, centra_id=int(current_user.centra_unit))
     return db_packages
 
 @router.put("/wash_wet_leaves/{id}", dependencies=[Depends(role_access(RoleEnum.centra))])
@@ -149,6 +149,6 @@ def add_shipping_info(shipping:schemas.ShippingInfoRecord, db:db_dependecy, curr
     crud.create_GuardHarbor_notifications(db=db, message=f"New shipping added - Shipping#{db_shipping.id}", id=current_user.centra_unit)
 
 @router.get("/shippings", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_shipping(db: db_dependecy):
-    db_shippings = crud.get_shipping(db=db)
+def get_shipping(db: db_dependecy, current_user: Users = Depends(get_current_user)):
+    db_shippings = crud.get_shipping(db=db, centra_id=int(current_user.centra_unit))
     return db_shippings
