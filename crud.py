@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session, Query
-from sqlalchemy import and_, or_
+from sqlalchemy import and_, or_, func
 from sqlalchemy.sql import extract
 import models
 import schemas
@@ -248,8 +248,12 @@ def get_packages_created(db: Session, centra_id: int, year: int = 0, month: int 
 
     if year and month and day:
         if filter == "w":
-            query = query.filter(models.PackageData.created_datetime.between(date(year, month, day)-timedelta(days=date(year, month, day).isoweekday()-1), date(year, month, day) + timedelta(days=7-date(year, month, day).isoweekday())))
-        else: query = query.filter(models.PackageData.created_datetime == date(year, month, day))
+            # Calculate start of week
+            start_date = date(year, month, day) - timedelta(days=date(year, month, day).weekday())
+            # Ensure the end date is the start date + 6 days to cover the whole week
+            end_date = start_date + timedelta(days=6)
+            query = query.filter(func.DATE(models.PackageData.created_datetime).between(start_date, end_date))
+        else: query = query.filter(func.DATE(models.PackageData.created_datetime) == date(year, month, day))
 
     elif year:
         query = query.filter(extract("year", models.PackageData.created_datetime) == year)
