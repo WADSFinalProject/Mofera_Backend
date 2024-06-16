@@ -112,6 +112,7 @@ class Package(packageRecord):
     
         id: int
         status: int
+        created_datetime: Optional[datetime] = None
     
         class Config:
             from_attributes = True

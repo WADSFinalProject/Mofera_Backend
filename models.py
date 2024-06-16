@@ -91,6 +91,7 @@ class PackageData(Base):
     received_date = Column(Date, nullable=True)
     reception_id = Column(Integer, nullable=True)
     exp_date = Column(Date, nullable=True)
+    created_datetime = Column(DateTime, nullable=True)
 
     centra_owner = relationship(
         "Centra", backref="package_data", foreign_keys=[centra_id])
