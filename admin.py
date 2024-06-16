@@ -46,7 +46,6 @@ logger = logging.getLogger(__name__)
 
 @router.get("/users", dependencies=[Depends(role_access(RoleEnum.admin))])
 def get_user(db:db_dependecy, s:str = "", p: int = 0):
-
     db_user = crud.get_users(db=db)
     return db_user
 
@@ -148,7 +147,7 @@ def delete_package(package_id: int, db: db_dependecy):
     db_package = crud.get_package_by_id(db=db, package_id=package_id)
     if not db_package:
         raise HTTPException(status_code=404, detail="Package not found")
-    crud.delete_package(db=db, package=db_package)
+    crud.delete_package(db=db, package_id=package_id)
     return JSONResponse(content={"message": "Package deleted successfully"})
 
 @router.delete("/checkpoints/{checkpoint_id}", dependencies=[Depends(role_access(RoleEnum.admin))])
@@ -156,7 +155,7 @@ def delete_checkpoint(checkpoint_id: int, db: db_dependecy):
     db_checkpoint = crud.get_checkpoint_by_id(db=db, checkpoint_id=checkpoint_id)
     if not db_checkpoint:
         raise HTTPException(status_code=404, detail="Checkpoint not found")
-    crud.delete_checkpoint(db=db, checkpoint=db_checkpoint)
+    crud.delete_checkpoint(db=db, checkpoint_id=checkpoint_id)
     return JSONResponse(content={"message": "Checkpoint deleted successfully"})
 
 @router.delete("/shipping/{shipping_id}", dependencies=[Depends(role_access(RoleEnum.admin))])
@@ -164,7 +163,7 @@ def delete_shipping(shipping_id: int, db: db_dependecy):
     db_shipping = crud.get_shipping_by_id(db=db, shipping_id=shipping_id)
     if not db_shipping:
         raise HTTPException(status_code=404, detail="Shipping not found")
-    crud.delete_shipping(db=db, shipping=db_shipping)
+    crud.delete_shipping(db=db, shipping_id=shipping_id)
     return JSONResponse(content={"message": "Shipping deleted successfully"})
 
 @router.delete("/wet_leaves/{wet_leaves_id}", dependencies=[Depends(role_access(RoleEnum.admin))])
@@ -172,7 +171,7 @@ def delete_wet_leaves(wet_leaves_id: int, db: db_dependecy):
     db_wet_leaves = crud.get_wet_leaves_by_id(db=db, wet_leaves_id=wet_leaves_id)
     if not db_wet_leaves:
         raise HTTPException(status_code=404, detail="Wet Leaves not found")
-    crud.delete_wet_leaves(db=db, wet_leaves=db_wet_leaves)
+    crud.delete_wet_leaves(db=db, wet_leaves_id=wet_leaves_id)
     return JSONResponse(content={"message": "Wet Leaves deleted successfully"})
 
 @router.delete("/dry_leaves/{dry_leaves_id}", dependencies=[Depends(role_access(RoleEnum.admin))])
@@ -180,7 +179,7 @@ def delete_dry_leaves(dry_leaves_id: int, db: db_dependecy):
     db_dry_leaves = crud.get_dry_leaves_by_id(db=db, dry_leaves_id=dry_leaves_id)
     if not db_dry_leaves:
         raise HTTPException(status_code=404, detail="Dry Leaves not found")
-    crud.delete_dry_leaves(db=db, dry_leaves=db_dry_leaves)
+    crud.delete_dry_leaves(db=db, dry_leaves_id=dry_leaves_id)
     return JSONResponse(content={"message": "Dry Leaves deleted successfully"})
 
 @router.delete("/flour/{flour_id}", dependencies=[Depends(role_access(RoleEnum.admin))])
@@ -188,7 +187,7 @@ def delete_flour(flour_id: int, db: db_dependecy):
     db_flour = crud.get_flour_by_id(db=db, flour_id=flour_id)
     if not db_flour:
         raise HTTPException(status_code=404, detail="Flour not found")
-    crud.delete_flour(db=db, flour=db_flour)
+    crud.delete_flour(db=db, flour_id=flour_id)
     return JSONResponse(content={"message": "Flour deleted successfully"})
 
 @router.delete("/users/{user_id}", dependencies=[Depends(role_access(RoleEnum.admin))])
@@ -199,4 +198,11 @@ def delete_user(user_id: int, db: db_dependecy):
     crud.delete_user(db=db, user=db_user)
     return JSONResponse(content={"message": "User deleted successfully"})
 
+@router.delete("/centra/{centra_id}", dependencies=[Depends(role_access(RoleEnum.admin))])
+def delete_centra(centra_id: int, db: db_dependecy):
+    db_centra = crud.get_centra_by_id(db=db, centra_id=centra_id)
+    if not db_centra:
+        raise HTTPException(status_code=404, detail="Centra not found")
+    crud.delete_centra(db=db, centra_id=centra_id)
+    return JSONResponse(content={"message": "Centra deleted successfully"})
 
