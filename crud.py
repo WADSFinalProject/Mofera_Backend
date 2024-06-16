@@ -3,6 +3,7 @@ from sqlalchemy import and_, or_
 from sqlalchemy.sql import extract
 import models
 import schemas
+import auth
 import datetime
 from datetime import date, timedelta
 from fastapi import HTTPException
@@ -10,6 +11,9 @@ from typing import Optional, Union
 
 def get_wet_leaves_by_id(db: Session, wet_leaves_id: int):
     return db.query(models.Wet).filter(models.Wet.id == wet_leaves_id).first()
+
+def get_user_by_id(db: Session, user_id: int):
+    return db.query(models.Users).filter(models.Users.id == user_id).first()
 
 def get_dry_leaves_by_id(db: Session, dry_leaves_id: int):
     return db.query(models.Dry).filter(models.Dry.id == dry_leaves_id).first()
@@ -42,6 +46,23 @@ def get_checkpoints(db: Session, skip: int = 0, limit: int = 10, date_filter: da
         else:
             query = query.filter(models.CheckpointData.arrival_datetime == date_filter)
     return query.offset(skip).limit(limit).all()
+
+def get_users(db: Session, skip: int = 0, limit: int = 10000):
+    return db.query(models.Users).offset(skip).limit(limit).all()
+
+def update_user(db: Session, user: models.Users, user_update: schemas.UserUpdate):
+    for key, value in user_update.dict(exclude_unset=True).items():
+        setattr(user, key, value)
+    db.commit()
+    db.refresh(user)
+    return user
+
+def delete_user(db: Session, user: models.Users):
+    db.delete(user)
+    db.commit()
+
+def get_centra(db: Session, skip: int = 0, limit: int = 50):
+    return db.query(models.Centra).offset(skip).limit(limit).all()
 
 def update_checkpoint(db: Session, id: int):
 
