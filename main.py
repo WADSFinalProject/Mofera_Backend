@@ -55,6 +55,7 @@ app.include_router(usersmanagement.router)
 app.include_router(profiles.router)
 app.include_router(edit_profile.router)
 app.include_router(xyz.router)
+app.include_router(admin.router)
 
 origins = [
     "http://localhost:5173",

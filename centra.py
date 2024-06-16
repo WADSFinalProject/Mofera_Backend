@@ -112,6 +112,16 @@ def get_notification(db: db_dependecy):
     db_packages = crud.get_centra_notifications(db=db)
     return db_packages
 
+@router.get("/shippings", dependencies=[Depends(role_access(RoleEnum.centra))])
+def get_shipping(db: db_dependecy):
+    db_shipping = crud.get_shipping(db=db)
+    return db_shipping
+
+@router.get("/checkpoints", dependencies=[Depends(role_access(RoleEnum.centra))])
+def get_checkpoint(db: db_dependecy):
+    db_checkpoint = crud.get_checkpoints(db=db)
+    return db_checkpoint
+
 @router.put("/wash_wet_leaves/{id}", dependencies=[Depends(role_access(RoleEnum.centra))])
 def wash_wet_leaves(id:int, date:schemas.DatetimeRecord, db: db_dependecy, current_user: Users = Depends(get_current_user)):
     query = crud.wash_wet_leaves(db=db, id=id, date=date)
