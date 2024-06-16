@@ -115,12 +115,12 @@ def get_packages_with_status(status: int, db: db_dependecy, current_user: Users 
 
 @router.get("/notification", dependencies=[Depends(role_access(RoleEnum.centra))])
 def get_notification(db: db_dependecy, current_user: Users = Depends(get_current_user)):
-    db_packages = crud.get_centra_notifications(db=db, centra_id=current_user.centra_unit)
+    db_packages = crud.get_centra_notifications(db=db, centra_id=int(current_user.centra_unit))
     return db_packages
 
 @router.get("/shippings", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_shipping(db: db_dependecy):
-    db_shipping = crud.get_shipping(db=db)
+def get_shipping(db: db_dependecy, current_user: Users = Depends(get_current_user)):
+    db_shipping = crud.get_shipping(db=db, centra_id=int(current_user.centra_unit))
     return db_shipping
 
 @router.get("/checkpoints", dependencies=[Depends(role_access(RoleEnum.centra))])
@@ -157,17 +157,7 @@ def add_shipping_info(shipping:schemas.ShippingInfoRecord, db:db_dependecy, curr
     for id in shipping.packages:
         crud.update_package_shipping_detail(db=db, id=id, shipping_id=db_shipping.id )
     crud.create_centra_notifications(db=db, message=f"New shipping added - Shipping#{db_shipping.id}", id=current_user.centra_unit)
-    crud.create_GuardHarbor_notifications(db=db, message=f"New shipping added - Shipping#{db_shipping.id}", id=current_user.centra_unit)
-
-@router.get("/shippings", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_shipping(db: db_dependecy, current_user: Users = Depends(get_current_user)):
-    db_shippings = crud.get_shipping(db=db, centra_id=int(current_user.centra_unit))
-    return db_shippings
-
-@router.get("/checkpoints", dependencies=[Depends(role_access(RoleEnum.centra))])
-def get_checkpoint(db: db_dependecy):
-    db_checkpoint = crud.get_checkpoints(db=db)
-    return db_checkpoint
+    crud.create_GuardHarbor_notifications(db=db, message=f'<b style="color: primary;">Shipping ID #{db_shipping.id}</b> has been shipped by Centra {db_shipping.centra_id}', id=current_user.centra_unit, shipping_id=db_shipping.id)
 
 @router.get("/reception_packages", dependencies=[Depends(role_access(RoleEnum.centra))])
 def get_reception_packages(db: db_dependecy):

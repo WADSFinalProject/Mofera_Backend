@@ -194,7 +194,7 @@ class GuardHarborNotification(Base):
     message = Column(String(500))
     date = Column(DateTime)
     centra_id = Column(Integer)
-
+    shipping_id = Column(Integer)
 
 class ReceptionPackage(Base):
     __tablename__ = "reception_packages"

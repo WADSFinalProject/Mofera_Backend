@@ -296,6 +296,18 @@ def get_centra_notifications(db: Session, centra_id: int = 0, skip: int = 0, lim
     if centra_id: query = filter_by_centra_id(query, models.CentraNotification, centra_id)
     return query.offset(skip).limit(limit).all()
 
+def get_guard_harbor_notifications(db: Session, skip: int = 0, limit: int = 100, date_filter: date = None, filter: Union[str, None] = None):
+    query = db.query(models.GuardHarborNotification)
+
+    if filter == "before":
+        query = query.filter(models.GuardHarborNotification.date < date_filter)
+    elif filter == "after":
+            query = query.filter(models.GuardHarborNotification.date > date_filter)
+    elif filter == "during":
+            query = query.filter(models.GuardHarborNotification.date == date_filter)
+    
+    return query.offset(skip).limit(limit).all()
+
 def get_reception_packages(db: Session, skip: int = 0, limit: int = 10, date_filter: datetime = None, before: bool = None, after: bool = None):
     query = db.query(models.ReceptionPackage)
     if date_filter:
@@ -387,8 +399,8 @@ def create_centra_notifications(db: Session, message:str, id:int):
     db.refresh(db_centra_notif)
     return db_centra_notif
 
-def create_GuardHarbor_notifications(db: Session, message:str, id:int):
-    db_guard_harbor_notif = models.GuardHarborNotification(message=message, date=datetime.datetime.now(), centra_id=id)
+def create_GuardHarbor_notifications(db: Session, message:str, id:int, shipping_id:int):
+    db_guard_harbor_notif = models.GuardHarborNotification(message=message, date=datetime.datetime.now(), centra_id=id, shipping_id=shipping_id)
     db.add(db_guard_harbor_notif)
     db.commit()
     db.refresh(db_guard_harbor_notif)
