@@ -7,6 +7,7 @@ import guard_harbor
 import usersmanagement
 import profiles
 import edit_profile
+import xyz
 import uvicorn
 import forget_password
 from fastapi import FastAPI, Depends, HTTPException, APIRouter, Request, status
@@ -54,6 +55,7 @@ app.include_router(usersmanagement.router)
 app.include_router(profiles.router)
 app.include_router(edit_profile.router)
 app.include_router(forget_password.router)
+app.include_router(xyz.router)
 """ app.include_router(profilecontent.router) """
 
 origins = [

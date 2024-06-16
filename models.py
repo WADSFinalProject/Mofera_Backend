@@ -201,4 +201,5 @@ class ReceptionPackage(Base):
     total_packages_received = Column(Integer)
     weight = Column(Float)
     receival_datetime = Column(DateTime)
-    centra_id = Column(ForeignKey("centra.id"))
+    centra_id = Column(String(length=500))
+

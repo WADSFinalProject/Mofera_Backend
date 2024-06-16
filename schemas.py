@@ -196,7 +196,7 @@ class ReceptionPackageBase(BaseModel):
     package_id: list[int]
     total_packages_received: int
     weight: float
-    centra_id: list[int]
+    centra_id: str
     receival_datetime: datetime
 
 class ReceptionPackageRecord(ReceptionPackageBase):

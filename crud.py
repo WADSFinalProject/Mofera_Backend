@@ -201,9 +201,9 @@ def flour_dry_leaves(db: Session, id: int, date: schemas.DatetimeRecord):
     db.commit()
     return query
 
-def get_packages_by_status(db: Session, status: int, centra_id: int, skip:int = 0, limit:int = 30):
+def get_packages_by_status(db: Session, status: int, centra_id: int = 0, skip:int = 0, limit:int = 30):
     query = db.query(models.PackageData).filter(models.PackageData.status == status)
-    query = filter_by_centra_id(query, models.PackageData, centra_id)
+    if centra_id: query = filter_by_centra_id(query, models.PackageData, centra_id)
     return query.offset(skip).limit(limit).all()
 
 # def get_packages(db: Session):
