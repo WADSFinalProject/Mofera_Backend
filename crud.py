@@ -53,17 +53,17 @@ def filter_by_centra_id(query: Query, model, centra_id):
         query = query.filter(model.centra_id == centra_id)
     return query
 
-def get_collection(db: Session, centra_id: int, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
-    query = db.query(models.Dry)
+def get_collection(db: Session, centra_id: int, skip: int = 0, limit: int = 10, date_filter: datetime = None, before: bool = None, after: bool = None):
+    query = db.query(models.Collection)
     if date_filter:
         if before:
-            query = query.filter(models.Collection.retrieval_date < date_filter)
+            query = query.filter(models.Collection.retrieval_datetime < date_filter)
         elif after:
-            query = query.filter(models.Collection.retrieval_date > date_filter)
+            query = query.filter(models.Collection.retrieval_datetime > date_filter)
         else:
-            query = query.filter(models.Collection.retrieval_date == date_filter)
+            query = query.filter(models.Collection.retrieval_datetime == date_filter)
 
-    query = filter_by_centra_id(query, models.Dry, centra_id)
+    query = filter_by_centra_id(query, models.Collection, centra_id)
     return query.offset(skip).limit(limit).all()
 
 def get_wet_leaves(db: Session, centra_id: int, skip: int = 0, limit: int = 20, year: int = 0, month: int = 0, day: int = 0, filter: str = ""):
@@ -241,15 +241,15 @@ def get_centra_notifications(db: Session, centra_id: int, skip: int = 0, limit: 
     query = filter_by_centra_id(query, models.PackageData, centra_id)
     return query.offset(skip).limit(limit).all()
 
-def get_reception_packages(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+def get_reception_packages(db: Session, skip: int = 0, limit: int = 10, date_filter: datetime = None, before: bool = None, after: bool = None):
     query = db.query(models.ReceptionPackage)
     if date_filter:
         if before:
-            query = query.filter(models.ReceptionPackage.receival_date < date_filter)
+            query = query.filter(models.ReceptionPackage.receival_datetime < date_filter)
         elif after:
-            query = query.filter(models.ReceptionPackage.receival_date > date_filter)
+            query = query.filter(models.ReceptionPackage.receival_datetime > date_filter)
         else:
-            query = query.filter(models.ReceptionPackage.receival_date == date_filter)
+            query = query.filter(models.ReceptionPackage.receival_datetime == date_filter)
     return query.offset(skip).limit(limit).all()
 
 def update_package_shipping_detail(db:Session, id:int, shipping_id:int):
@@ -275,7 +275,7 @@ def update_reception_detail(db:Session, id:int, reception_id:int):
     return db_reception
 
 def create_collection(db: Session, collection: schemas.CollectionRecord, user: models.Users):
-    db_collection = models.Collection(retrieval_date=collection.retrieval_date, weight=collection.weight, centra_id=user.centra_unit)
+    db_collection = models.Collection(retrieval_datetime=collection.retrieval_datetime, weight=collection.weight, centra_id=user.centra_unit)
     db.add(db_collection)
     db.commit()
     db.refresh(db_collection)
