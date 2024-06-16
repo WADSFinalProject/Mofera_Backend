@@ -81,3 +81,18 @@ def get_packages(db: db_dependecy):
 def get_checkpoint(db: db_dependecy):
     db_checkpoint = crud.get_checkpoints(db=db)
     return db_checkpoint
+
+@router.get("/packages_status", dependencies=[Depends(role_access(RoleEnum.GuardHarbor))])
+def get_packages_with_status(status: int, db: db_dependecy):
+    db_packages = crud.get_packages_by_status(db=db, status=status)
+    return db_packages
+
+@router.get("/notification", dependencies=[Depends(role_access(RoleEnum.GuardHarbor))])
+def get_notification(db: db_dependecy):
+    db_packages = crud.get_guard_harbor_notifications(db=db)
+    return db_packages
+
+@router.get("/reception_packages", dependencies=[Depends(role_access(RoleEnum.GuardHarbor))])
+def get_reception_packages(db: db_dependecy):
+    db_reception = crud.get_reception_packages(db=db)
+    return db_reception
