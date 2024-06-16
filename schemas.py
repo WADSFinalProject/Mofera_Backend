@@ -27,7 +27,7 @@ class CollectionBase(BaseModel):
     weight: float
 
 class CollectionRecord(CollectionBase):
-    retrieval_date: date
+    retrieval_datetime: datetime
 
 class WetLeavesBase(BaseModel):
     weight: float
@@ -197,7 +197,7 @@ class ReceptionPackageBase(BaseModel):
     total_packages_received: int
     weight: float
     centra_id: int
-    receival_date: date
+    receival_datetime: datetime
 
 class ReceptionPackageRecord(ReceptionPackageBase):
     pass
@@ -210,4 +210,4 @@ class ReceptionPackage(ReceptionPackageBase):
         from_attributes = True
 
 class ReceptionPackageReceival(ReceptionPackageBase):
-    receival_date: date
+    receival_datetime: datetime
