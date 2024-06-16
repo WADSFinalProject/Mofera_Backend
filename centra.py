@@ -115,7 +115,7 @@ def get_packages_with_status(status: int, db: db_dependecy, current_user: Users 
 
 @router.get("/notification", dependencies=[Depends(role_access(RoleEnum.centra))])
 def get_notification(db: db_dependecy, current_user: Users = Depends(get_current_user)):
-    db_packages = crud.get_centra_notifications(db=db, centra_id=int(current_user.centra_unit))
+    db_packages = crud.get_centra_notifications(db=db, centra_id=current_user.centra_unit)
     return db_packages
 
 @router.get("/shippings", dependencies=[Depends(role_access(RoleEnum.centra))])
