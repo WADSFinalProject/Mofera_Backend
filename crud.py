@@ -72,7 +72,7 @@ def update_checkpoint(db: Session, id: int):
     update_package_status(db, id, 2)
     return
 
-def filter_by_centra_id(query: Query, model, centra_id):
+def filter_by_centra_id(query: Query, model: models, centra_id: int):
     if centra_id is not None:
         query = query.filter(model.centra_id == centra_id)
     return query
@@ -263,7 +263,7 @@ def get_centra_notifications(db: Session, centra_id: int = 0, skip: int = 0, lim
     elif filter == "during":
             query = query.filter(models.CentraNotification.date == date_filter)
     
-    if centra_id: query = filter_by_centra_id(query, models.PackageData, centra_id)
+    if centra_id: query = filter_by_centra_id(query, models.CentraNotification, centra_id)
     return query.offset(skip).limit(limit).all()
 
 def get_reception_packages(db: Session, skip: int = 0, limit: int = 10, date_filter: datetime = None, before: bool = None, after: bool = None):
