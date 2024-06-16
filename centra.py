@@ -16,6 +16,7 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, status
 from pydantic import BaseModel
 import schemas
 import crud
+import calendar
 
 from auth import role_access, get_db, get_current_user
 from models import Users
@@ -172,3 +173,136 @@ def get_checkpoint(db: db_dependecy):
 def get_reception_packages(db: db_dependecy):
     db_reception = crud.get_reception_packages(db=db)
     return db_reception
+
+@router.get("/quick_get_wet_stats", dependencies=[Depends(role_access(RoleEnum.centra))])
+def quick_get_wet_statistics(db:db_dependecy, interval:str, date:date = date.today(), slice:int = 5, current_user: Users = Depends(get_current_user)):
+    label = list()
+    data = list()
+    if interval == "daily":
+        for offset in range(slice):
+            offset_date = date - timedelta(days=offset)
+            label.append(offset_date.strftime("%d/%m/%Y"))
+            data.append(sum(wet.weight for wet in crud.get_wet_leaves(db=db, centra_id=int(current_user.centra_unit), limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day)))
+    
+    elif interval == "weekly":
+        for offset in range(slice):
+            offset_date = date - timedelta(days=date.weekday()+1+(offset-1)*7)
+            label.append(offset_date.strftime("%d/%m/%Y"))
+            data.append(sum(wet.weight for wet in crud.get_wet_leaves(db=db, centra_id=int(current_user.centra_unit), limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, filter="w")))
+    
+    elif interval == "monthly":
+        for offset in range(slice):
+            offset_date = date.replace(year= date.year-1 if date.month-offset < 1  else date.year, month=date.month-offset if date.month-offset > 0 else 12)
+            label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]
+).strftime("%Y-%m"))
+            data.append(sum(wet.weight for wet in crud.get_wet_leaves(db=db, centra_id=int(current_user.centra_unit), limit=0, year=offset_date.year, month=offset_date.month)))
+    
+    elif interval == "annually":
+        for offset in range(slice):
+            offset_date = date.replace(year=date.year-offset)
+            label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]).strftime("%Y"))
+            data.append(sum(wet.weight for wet in crud.get_wet_leaves(db=db, centra_id=int(current_user.centra_unit), limit=0, year=offset_date.year)))
+    label.reverse()
+    data.reverse()
+
+    return {"label":label, "data":data}
+
+@router.get("/quick_get_dry_stats", dependencies=[Depends(role_access(RoleEnum.centra))])
+def quick_dry_quick_statistics(db:db_dependecy, interval:str, date:date = date.today(), current_user: Users = Depends(get_current_user), slice:int = 5):
+    label = list()
+    data = list()
+    if interval == "daily":
+        for offset in range(slice):
+            offset_date = date - timedelta(days=offset)
+            label.append(offset_date.strftime("%d/%m/%Y"))
+            data.append(sum(dry.weight for dry in crud.get_dry_leaves_by_dried_date(db=db, centra_id=int(current_user.centra_unit), limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day)))
+    
+    elif interval == "weekly":
+        for offset in range(slice):
+            offset_date = date - timedelta(days=date.weekday()+1+(offset-1)*7)
+            label.append(offset_date.strftime("%d/%m/%Y"))
+            data.append(sum(dry.weight for dry in crud.get_dry_leaves_by_dried_date(db=db, centra_id=int(current_user.centra_unit), limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, filter="w")))
+    
+    elif interval == "monthly":
+        for offset in range(slice):
+            offset_date = date.replace(year= date.year-1 if date.month-offset < 1  else date.year, month=date.month-offset if date.month-offset > 0 else 12)
+            label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]
+).strftime("%Y-%m"))
+            data.append(sum(dry.weight for dry in crud.get_dry_leaves_by_dried_date(db=db, centra_id=int(current_user.centra_unit), limit=0, year=offset_date.year, month=offset_date.month)))
+    
+    elif interval == "annually":
+        for offset in range(slice):
+            offset_date = date.replace(year=date.year-offset)
+            label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]).strftime("%Y"))
+            data.append(sum(dry.weight for dry in crud.get_dry_leaves_by_dried_date(db=db, centra_id=int(current_user.centra_unit), limit=0, year=offset_date.year)))
+    label.reverse()
+    data.reverse()
+
+    return {"label":label, "data":data}
+
+@router.get("/quick_get_flour_stats", dependencies=[Depends(role_access(RoleEnum.centra))])
+def quick_get_flour_statistics(db:db_dependecy, interval:str, date:date = date.today(), current_user: Users = Depends(get_current_user), slice:int = 5):
+    label = list()
+    data = list()
+    if interval == "daily":
+        for offset in range(slice):
+            offset_date = date - timedelta(days=offset)
+            label.append(offset_date.strftime("%d/%m/%Y"))
+            data.append(sum(flour.weight for flour in crud.get_flour_by_floured_date(db=db, centra_id=int(current_user.centra_unit), limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day)))
+    
+    elif interval == "weekly":
+        for offset in range(slice):
+            offset_date = date - timedelta(days=date.weekday()+1+(offset-1)*7)
+            label.append(offset_date.strftime("%d/%m/%Y"))
+            data.append(sum(flour.weight for flour in crud.get_flour_by_floured_date(db=db, centra_id=int(current_user.centra_unit), limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, filter="w")))
+    
+    elif interval == "monthly":
+        for offset in range(slice):
+            offset_date = date.replace(year= date.year-1 if date.month-offset < 1  else date.year, month=date.month-offset if date.month-offset > 0 else 12)
+            label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]
+).strftime("%Y-%m"))
+            data.append(sum(flour.weight for flour in crud.get_flour_by_floured_date(db=db, centra_id=int(current_user.centra_unit), limit=0, year=offset_date.year, month=offset_date.month)))
+    
+    elif interval == "annually":
+        for offset in range(slice):
+            offset_date = date.replace(year=date.year-offset)
+            label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]).strftime("%Y"))
+            data.append(sum(flour.weight for flour in crud.get_flour_by_floured_date(db=db, centra_id=int(current_user.centra_unit), limit=0, year=offset_date.year)))
+    label.reverse()
+    data.reverse()
+
+    return {"label":label, "data":data}
+
+@router.get("/quick_get_package_stats", dependencies=[Depends(role_access(RoleEnum.centra))])
+def quick_get_package_statistics(db:db_dependecy, interval: str, date: date = date.today(), current_user: Users = Depends(get_current_user), slice: int = 5):
+    label = list()
+    data = list()
+
+    if interval == "daily":
+        for offset in range(slice):
+            offset_date = date - timedelta(days=offset)
+            label.append(offset_date.strftime("%d/%m/%Y"))
+            data.append(len(crud.get_packages_created(db=db, centra_id=int(current_user.centra_unit) ,year=offset_date.year, month=offset_date.month, day=offset_date.day)))
+    
+    elif interval == "weekly":
+        for offset in range(slice):
+            offset_date = date - timedelta(days=date.weekday()+1+(offset-1)*7)
+            label.append(offset_date.strftime("%d/%m/%Y"))
+            data.append(len(crud.get_packages_created(db=db, centra_id=int(current_user.centra_unit), limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, filter="w")))
+    
+    elif interval == "monthly":
+        for offset in range(slice):
+            offset_date = date.replace(year=date.year - 1 if date.month - offset < 1 else date.year, month=date.month - offset if date.month - offset > 0 else 12)
+            label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]).strftime("%Y-%m"))
+            data.append(len(crud.get_packages_created(db=db, centra_id=int(current_user.centra_unit), year=offset_date.year, month=offset_date.month)))
+    
+    elif interval == "annually":
+        for offset in range(slice):
+            offset_date = date.replace(year=date.year - offset)
+            label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]).strftime("%Y"))
+            data.append(len(crud.get_packages_created(db=db, centra_id=int(current_user.centra_unit), year=offset_date.year)))
+
+    label.reverse()
+    data.reverse()
+
+    return {"label":label, "data":data}
