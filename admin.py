@@ -96,7 +96,7 @@ def update_user(user_id: int, user: schemas.UserUpdate, db: db_dependecy):
     return updated_user
 
 @router.put("/packages/{package_id}", dependencies=[Depends(role_access(RoleEnum.admin))])
-def update_package(package_id: int, package: schemas.PackageUpd ate, db: db_dependecy):
+def update_package(package_id: int, package: schemas.PackageUpdate, db: db_dependecy):
     db_package = crud.get_package_by_id(db=db, package_id=package_id)
     if not db_package:
         raise HTTPException(status_code=404, detail="Package not found")
