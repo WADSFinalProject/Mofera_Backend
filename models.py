@@ -197,13 +197,7 @@ class GuardHarborNotification(Base):
 class ReceptionPackage(Base):
     __tablename__ = "reception_packages"
     id = Column(Integer, primary_key=True, index=True)
-    package_id = Column(Integer, ForeignKey("package_data.id"))
     total_packages_received = Column(Integer)
     weight = Column(Float)
-    receival_date = Column(Date)
-    centra_id = Column(Integer, ForeignKey("centra.id"))
-
-    centra = relationship(
-        "Centra", backref="reception_packages", foreign_keys=[centra_id])
-    package = relationship(
-        "PackageData", backref="reception_packages", foreign_keys=[package_id])
+    receival_datetime = Column(DateTime)
+    centra_id = Column(ForeignKey("centra.id"))

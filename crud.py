@@ -246,11 +246,12 @@ def update_rescaled(db:Session, id:int, rescaled_weight: float):
     return db_rescaled
 
 def update_reception_detail(db:Session, id:int, reception_id:int):
-    db_reception = db.query(models.ReceptionPackage).filter(models.ReceptionPackage.id == id).first()
-    setattr(db_reception, "reception_id", reception_id)
+    db_package = db.query(models.PackageData).filter(models.PackageData.id == id).first()
+    setattr(db_package, "reception_id", reception_id)
+    setattr(db_package, "status", 3)
     db.commit()
-    db.refresh(db_reception)
-    return db_reception
+    db.refresh(db_package)
+    return db_package
 
 def create_collection(db: Session, collection: schemas.CollectionRecord, user: models.Users):
     db_collection = models.Collection(retrieval_date=collection.retrieval_date, weight=collection.weight, centra_id=user.centra_unit)
@@ -317,7 +318,7 @@ def create_GuardHarbor_notifications(db: Session, message:str, id:int):
     return db_guard_harbor_notif
 
 def create_reception_packages(db: Session, reception_packages: schemas.ReceptionPackageRecord):
-    db_reception_packages = models.ReceptionPackage(**reception_packages.model_dump())
+    db_reception_packages = models.ReceptionPackage(**reception_packages.model_dump(exclude={"package_id"}))
     db.add(db_reception_packages)
     db.commit()
     db.refresh(db_reception_packages)
