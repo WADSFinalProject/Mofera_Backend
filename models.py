@@ -139,7 +139,7 @@ class Collection(Base):
     __tablename__ = "collection"
 
     id = Column(Integer, primary_key=True, index=True)
-    retrieval_date = Column(Date)
+    retrieval_datetime = Column(DateTime)
     weight = Column(Float)
     centra_id = Column(Integer, ForeignKey("centra.id"))
 

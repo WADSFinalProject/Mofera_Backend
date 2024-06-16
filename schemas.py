@@ -36,7 +36,7 @@ class CollectionBase(BaseModel):
     weight: float
 
 class CollectionRecord(CollectionBase):
-    retrieval_date: date
+    retrieval_datetime: datetime
 
 class WetLeavesBase(BaseModel):
     weight: float
@@ -219,4 +219,4 @@ class ReceptionPackage(ReceptionPackageBase):
         from_attributes = True
 
 class ReceptionPackageReceival(ReceptionPackageBase):
-    receival_date: date
+    receival_datetime: datetime

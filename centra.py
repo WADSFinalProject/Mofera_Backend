@@ -162,3 +162,13 @@ def add_shipping_info(shipping:schemas.ShippingInfoRecord, db:db_dependecy, curr
 def get_shipping(db: db_dependecy, current_user: Users = Depends(get_current_user)):
     db_shippings = crud.get_shipping(db=db, centra_id=int(current_user.centra_unit))
     return db_shippings
+
+@router.get("/checkpoints", dependencies=[Depends(role_access(RoleEnum.centra))])
+def get_checkpoint(db: db_dependecy):
+    db_checkpoint = crud.get_checkpoints(db=db)
+    return db_checkpoint
+
+@router.get("/reception_packages", dependencies=[Depends(role_access(RoleEnum.centra))])
+def get_reception_packages(db: db_dependecy):
+    db_reception = crud.get_reception_packages(db=db)
+    return db_reception
