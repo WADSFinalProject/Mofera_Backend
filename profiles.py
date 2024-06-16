@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
-from typing import Annotated
+from typing import Annotated, Optional
 
 from database import SessionLocal
 from models import Users
@@ -26,7 +26,7 @@ db_dependency = Annotated[Session, Depends(get_db)]
 
 class UserProfile(BaseModel):
     username: str
-    centra_unit: int
+    centra_unit: Optional[int]
     role: str
     email: str
 
