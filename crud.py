@@ -1,4 +1,4 @@
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Query
 from sqlalchemy import and_, or_
 from sqlalchemy.sql import extract
 import models
@@ -7,7 +7,7 @@ import auth
 import datetime
 from datetime import date, timedelta
 from fastapi import HTTPException
-from typing import Union
+from typing import Optional, Union
 
 def get_wet_leaves_by_id(db: Session, wet_leaves_id: int):
     return db.query(models.Wet).filter(models.Wet.id == wet_leaves_id).first()
@@ -69,7 +69,12 @@ def update_checkpoint(db: Session, id: int):
     update_package_status(db, id, 2)
     return
 
-def get_collection(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+def filter_by_centra_id(query: Query, model, centra_id):
+    if centra_id is not None:
+        query = query.filter(model.centra_id == centra_id)
+    return query
+
+def get_collection(db: Session, centra_id: int, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Dry)
     if date_filter:
         if before:
@@ -78,9 +83,11 @@ def get_collection(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
             query = query.filter(models.Collection.retrieval_date > date_filter)
         else:
             query = query.filter(models.Collection.retrieval_date == date_filter)
+
+    query = filter_by_centra_id(query, models.Dry, centra_id)
     return query.offset(skip).limit(limit).all()
 
-def get_wet_leaves(db: Session, skip: int = 0, limit: int = 20, year: int = 0, month: int = 0, day: int = 0, filter: str = ""):
+def get_wet_leaves(db: Session, centra_id: int, skip: int = 0, limit: int = 20, year: int = 0, month: int = 0, day: int = 0, filter: str = ""):
     query = db.query(models.Wet)
     if year and month and day:
         if filter == "w":
@@ -93,16 +100,17 @@ def get_wet_leaves(db: Session, skip: int = 0, limit: int = 20, year: int = 0, m
         if month:
             query = query.filter(extract("month", models.Wet.retrieval_date) == month)
 
+    query = filter_by_centra_id(query, models.Wet, centra_id)
+
     if skip:
         query = query.offset(skip)
     
     if limit:
         query = query.limit(limit)        
     
-
     return query.all()
 
-def get_washed_wet_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+def get_washed_wet_leaves(db: Session, centra_id: int, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Wet).filter(models.Wet.washed_datetime <= datetime.datetime.now())
     if date_filter:
         if before:
@@ -111,9 +119,11 @@ def get_washed_wet_leaves(db: Session, skip: int = 0, limit: int = 10, date_filt
             query = query.filter(models.Wet.retrieval_date > date_filter)
         else:
             query = query.filter(models.Wet.retrieval_date == date_filter)
+    
+    query = filter_by_centra_id(query, models.Wet, centra_id)
     return query.offset(skip).limit(limit).all()
 
-def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None, between: bool = None):
+def get_dry_leaves(db: Session, centra_id: int, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None, between: bool = None):
     query = db.query(models.Dry)
     if date_filter:
         if before:
@@ -122,6 +132,8 @@ def get_dry_leaves(db: Session, skip: int = 0, limit: int = 10, date_filter: dat
             query = query.filter(models.Dry.floured_datetime > date_filter)
         else:
             query = query.filter(models.Dry.floured_datetime == date_filter)
+    
+    query = filter_by_centra_id(query, models.Dry, centra_id)
     return query.offset(skip).limit(limit).all()
 
 def get_dry_leaves_by_dried_date(db: Session, skip: int = 0, limit: int = 20, year: int = 0, month: int = 0, day: int = 0, filter: str = ""):
@@ -146,7 +158,7 @@ def get_dry_leaves_by_dried_date(db: Session, skip: int = 0, limit: int = 20, ye
 
     return query.all()
 
-def get_dry_leaves_mobile(db: Session, date_origin:date, interval: str, skip: int = 0, limit: int = 10):
+def get_dry_leaves_mobile(db: Session, date_origin:date, interval: str, centra_id: int, skip: int = 0, limit: int = 10):
     query = db.query(models.Dry)
     query = query.filter(models.Dry.dried_date >= date_origin)
     date_range = timedelta(days = 0)
@@ -158,9 +170,10 @@ def get_dry_leaves_mobile(db: Session, date_origin:date, interval: str, skip: in
         date_range = timedelta(days=7)
     
     query = query.filter(models.Dry.dried_date <= date_range+date_origin)
+    query = filter_by_centra_id(query, models.Dry, centra_id)
     return query.offset(skip).limit(limit).all()
 
-def get_flour(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+def get_flour(db: Session, centra_id: int, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Flour)
     if date_filter:
         if before:
@@ -169,6 +182,7 @@ def get_flour(db: Session, skip: int = 0, limit: int = 10, date_filter: date = N
             query = query.filter(models.Flour.finish_time > date_filter)
         else:
             query = query.filter(models.Flour.finish_time == date_filter)
+    query = filter_by_centra_id(query, models.Flour, centra_id)
     return query.offset(skip).limit(limit).all()
 
 def get_flour_by_floured_date(db: Session, skip: int = 0, limit: int = 20, year: int = 0, month: int = 0, day: int = 0, filter: str = ""):
@@ -208,15 +222,21 @@ def flour_dry_leaves(db: Session, id: int, date: schemas.DatetimeRecord):
     db.commit()
     return query
 
-def get_packages_by_status(db: Session, status: int, skip:int = 0, limit:int = 30):
+def get_packages_by_status(db: Session, status: int, centra_id: int = 0, skip:int = 0, limit:int = 30):
     query = db.query(models.PackageData).filter(models.PackageData.status == status)
+    if centra_id: query = filter_by_centra_id(query, models.PackageData, centra_id)
     return query.offset(skip).limit(limit).all()
 
-def get_packages(db: Session):
-    query = db.query(models.PackageData).all()
-    return query
+# def get_packages(db: Session):
+#     query = db.query(models.PackageData).all()
+#     return query
 
-def get_shipping(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+def get_packages(db: Session, centra_id: int):
+    query = db.query(models.PackageData)
+    query = filter_by_centra_id(query, models.PackageData, centra_id)
+    return query.all()
+
+def get_shipping(db: Session, centra_id: int, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Shipping)
     if date_filter:
         if before:
@@ -225,9 +245,11 @@ def get_shipping(db: Session, skip: int = 0, limit: int = 10, date_filter: date 
             query = query.filter(models.Shipping.departure_date > date_filter)
         else:
             query = query.filter(models.Shipping.departure_date == date_filter)
+
+    query = filter_by_centra_id(query, models.Shipping, centra_id)
     return query.offset(skip).limit(limit).all()
 
-def get_centra_notifications(db: Session, skip: int = 0, limit: int = 100, date_filter: date = None, filter: Union[str, None] = None):
+def get_centra_notifications(db: Session, centra_id: int, skip: int = 0, limit: int = 100, date_filter: date = None, filter: Union[str, None] = None):
     query = db.query(models.CentraNotification)
 
     if filter == "before":
@@ -237,7 +259,7 @@ def get_centra_notifications(db: Session, skip: int = 0, limit: int = 100, date_
     elif filter == "during":
             query = query.filter(models.CentraNotification.date == date_filter)
     
-
+    query = filter_by_centra_id(query, models.PackageData, centra_id)
     return query.offset(skip).limit(limit).all()
 
 def get_reception_packages(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
@@ -259,19 +281,20 @@ def update_package_shipping_detail(db:Session, id:int, shipping_id:int):
     db.refresh(db_package)
     return db_package
 
-def update_rescaled(db:Session, id:int, rescaled_weight: float, material: str):
-    db_rescaled = db.query(models.PackageData).filter(models.PackageData.id == id)
+def update_rescaled(db:Session, id:int, rescaled_weight: float):
+    db_rescaled = db.query(models.PackageData).filter(models.PackageData.id == id).first()
     setattr(db_rescaled, "weight", rescaled_weight)
     db.commit()
     db.refresh(db_rescaled)
     return db_rescaled
 
 def update_reception_detail(db:Session, id:int, reception_id:int):
-    db_reception = db.query(models.ReceptionPackage).filter(models.ReceptionPackage.id == id).first()
-    setattr(db_reception, "reception_id", reception_id)
+    db_package = db.query(models.PackageData).filter(models.PackageData.id == id).first()
+    setattr(db_package, "reception_id", reception_id)
+    setattr(db_package, "status", 3)
     db.commit()
-    db.refresh(db_reception)
-    return db_reception
+    db.refresh(db_package)
+    return db_package
 
 def create_collection(db: Session, collection: schemas.CollectionRecord, user: models.Users):
     db_collection = models.Collection(retrieval_date=collection.retrieval_date, weight=collection.weight, centra_id=user.centra_unit)
@@ -338,7 +361,7 @@ def create_GuardHarbor_notifications(db: Session, message:str, id:int):
     return db_guard_harbor_notif
 
 def create_reception_packages(db: Session, reception_packages: schemas.ReceptionPackageRecord):
-    db_reception_packages = models.ReceptionPackage(**reception_packages.model_dump())
+    db_reception_packages = models.ReceptionPackage(**reception_packages.model_dump(exclude={"package_id"}))
     db.add(db_reception_packages)
     db.commit()
     db.refresh(db_reception_packages)

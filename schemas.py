@@ -123,6 +123,7 @@ class ShippingInfoRecord(BaseModel):
     total_weight: float
     expedition: str
     departure_datetime: datetime
+    eta_datetime: datetime
 
 class ShippingDataRecord(BaseModel):
 
@@ -204,8 +205,8 @@ class ReceptionPackageBase(BaseModel):
     package_id: list[int]
     total_packages_received: int
     weight: float
-    centra_id: int
-    receival_date: date
+    centra_id: str
+    receival_datetime: datetime
 
 class ReceptionPackageRecord(ReceptionPackageBase):
     pass
