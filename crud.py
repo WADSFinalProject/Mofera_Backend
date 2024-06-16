@@ -263,7 +263,9 @@ def get_centra_notifications(db: Session, centra_id: int = 0, skip: int = 0, lim
     elif filter == "during":
             query = query.filter(models.CentraNotification.date == date_filter)
     
-    if centra_id: query = filter_by_centra_id(query, models.PackageData, centra_id)
+    if centra_id: query = filter_by_centra_id(query, models.CentraNotification, centra_id)
+    print(query.all())
+
     return query.offset(skip).limit(limit).all()
 
 def get_reception_packages(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
