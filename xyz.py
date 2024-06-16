@@ -191,6 +191,7 @@ def get_shipping_notification(db:db_dependecy, p: int = 0):
         "id":shipping.id,
         "shipper":f"Centra {shipping.centra_id}",
         "timestamp": shipping.departure_datetime,
+        "estimatedArrival": shipping.eta_datetime,
     } for shipping in db_shipping]
 
 @router.get("/get_arrival_notification", dependencies=[Depends(role_access(RoleEnum.xyz))])
