@@ -139,7 +139,7 @@ class Collection(Base):
     __tablename__ = "collection"
 
     id = Column(Integer, primary_key=True, index=True)
-    retrieval_date = Column(Date)
+    retrieval_datetime = Column(DateTime)
     weight = Column(Float)
     centra_id = Column(Integer, ForeignKey("centra.id"))
 
@@ -201,7 +201,7 @@ class ReceptionPackage(Base):
     package_id = Column(Integer, ForeignKey("package_data.id"))
     total_packages_received = Column(Integer)
     weight = Column(Float)
-    receival_date = Column(Date)
+    receival_datetime = Column(DateTime)
     centra_id = Column(Integer, ForeignKey("centra.id"))
 
     centra = relationship(
