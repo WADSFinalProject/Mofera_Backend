@@ -140,7 +140,7 @@ def get_dry_leaves(db: Session, centra_id: int = 0, skip: int = 0, limit: int = 
         query = filter_by_centra_id(query, models.Dry, centra_id)
     return query.offset(skip).limit(limit).all()
 
-def get_dry_leaves_by_dried_date(db: Session, skip: int = 0, limit: int = 20, year: int = 0, month: int = 0, day: int = 0, filter: str = ""):
+def get_dry_leaves_by_dried_date(db: Session, centra_id: int=0, skip: int = 0, limit: int = 20, year: int = 0, month: int = 0, day: int = 0, filter: str = ""):
     query = db.query(models.Dry)
     if year and month and day:
         if filter == "w":
@@ -153,13 +153,14 @@ def get_dry_leaves_by_dried_date(db: Session, skip: int = 0, limit: int = 20, ye
         if month:
             query = query.filter(extract("month", models.Dry.dried_date) == month)
 
+    if centra_id: query = filter_by_centra_id(query, models.Dry, centra_id)
+
     if skip:
         query = query.offset(skip)
     
     if limit:
         query = query.limit(limit)        
     
-
     return query.all()
 
 def get_dry_leaves_mobile(db: Session, date_origin:date, interval: str, centra_id: int=0, skip: int = 0, limit: int = 10):
@@ -189,7 +190,7 @@ def get_flour(db: Session, centra_id: int = 0, skip: int = 0, limit: int = 10, d
     if centra_id: query = filter_by_centra_id(query, models.Flour, centra_id)
     return query.offset(skip).limit(limit).all()
 
-def get_flour_by_floured_date(db: Session, skip: int = 0, limit: int = 20, year: int = 0, month: int = 0, day: int = 0, filter: str = ""):
+def get_flour_by_floured_date(db: Session, centra_id: int = 0, skip: int = 0, limit: int = 20, year: int = 0, month: int = 0, day: int = 0, filter: str = ""):
     query = db.query(models.Flour)
     if year and month and day:
         if filter == "w":
@@ -201,6 +202,8 @@ def get_flour_by_floured_date(db: Session, skip: int = 0, limit: int = 20, year:
     
         if month:
             query = query.filter(extract("month", models.Flour.floured_date) == month)
+
+    if centra_id: query = query.filter(models.Flour.centra_id == centra_id)
 
     if skip:
         query = query.offset(skip)
@@ -239,6 +242,29 @@ def get_packages(db: Session, centra_id: int=0):
     query = db.query(models.PackageData)
     if centra_id: query = filter_by_centra_id(query, models.PackageData, centra_id)
     return query.all()
+
+def get_packages_created(db: Session, centra_id: int, year: int = 0, month: int = 0, day: int = 0, filter: str = "", skip: int = 0, limit: int = 20):
+    query = db.query(models.PackageData).filter(models.PackageData.centra_id == centra_id)
+
+    if year and month and day:
+        if filter == "w":
+            query = query.filter(models.PackageData.created_datetime.between(date(year, month, day)-timedelta(days=date(year, month, day).isoweekday()-1), date(year, month, day) + timedelta(days=7-date(year, month, day).isoweekday())))
+        else: query = query.filter(models.PackageData.created_datetime == date(year, month, day))
+
+    elif year:
+        query = query.filter(extract("year", models.PackageData.created_datetime) == year)
+
+        if month:
+            query = query.filter(extract("month", models.PackageData.created_datetime) == month)
+
+    if skip:
+        query = query.offset(skip)
+    
+    if limit:
+        query = query.limit(limit)  
+
+    return query.all()
+     
 
 def get_shipping(db: Session, centra_id: int = 0, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Shipping)
@@ -344,7 +370,7 @@ def create_checkpoint(db: Session, checkpoint: schemas.CheckpointDataRecord):
     return db_checkpoint
 
 def create_package(db: Session, package: schemas.PackageCreate, id):
-    db_package = models.PackageData(**package.model_dump(), centra_id=id)
+    db_package = models.PackageData(**package.model_dump(), centra_id=id, created_datetime=datetime.datetime.now())
     db.add(db_package)
     db.commit()
     db.refresh(db_package)
