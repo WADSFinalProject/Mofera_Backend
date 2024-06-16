@@ -2,7 +2,7 @@ from typing import Optional
 
 from pydantic import BaseModel
 from datetime import date, timedelta, datetime
-
+from roles_enum import RoleEnum
 
 
 
@@ -16,6 +16,15 @@ class VerificationEmailRequest(BaseModel):
     email: str
     verification_link: str
 
+class UserUpdate(BaseModel):
+    username: Optional[str]
+    email: Optional[str]
+    password: Optional[str]
+    role: Optional[RoleEnum]
+    centra_unit: Optional[str]
+
+    class Config:
+        orm_mode = True
 
 class DatetimeRecord(BaseModel):
     datetime: datetime
@@ -196,7 +205,7 @@ class ReceptionPackageBase(BaseModel):
     package_id: list[int]
     total_packages_received: int
     weight: float
-    centra_id: int
+    centra_id: str
     receival_datetime: datetime
 
 class ReceptionPackageRecord(ReceptionPackageBase):

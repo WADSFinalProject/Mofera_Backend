@@ -55,6 +55,9 @@ async def update_profile(
 
         db.commit()
 
+        # Refresh user to get updated details
+        db.refresh(user)
+
         return {
             "username": user.username,
             "email": user.email,
