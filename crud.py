@@ -308,7 +308,7 @@ def get_guard_harbor_notifications(db: Session, skip: int = 0, limit: int = 100,
     
     return query.offset(skip).limit(limit).all()
 
-def get_reception_packages(db: Session, skip: int = 0, limit: int = 10, date_filter: datetime = None, before: bool = None, after: bool = None):
+def get_reception_packages(db: Session, skip: int = 0, limit: int = 100, date_filter: datetime = None, before: bool = None, after: bool = None):
     query = db.query(models.ReceptionPackage)
     if date_filter:
         if before:
