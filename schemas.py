@@ -131,7 +131,6 @@ class ShippingDataRecord(BaseModel):
     id: int
     expedition_id: int
 
-
 class ShippingDepature(ShippingDataRecord):
     departure_date: date
 
