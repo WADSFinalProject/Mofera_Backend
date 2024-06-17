@@ -75,7 +75,7 @@ def get_shipping(db: db_dependecy):
     return db_shipping
 
 @router.put("/shipping/{id}", dependencies=[Depends(role_access(RoleEnum.GuardHarbor))])
-def update_shipping(shipping_id: int, arrival_datetime: schemas.ShippingArrival, db: db_dependecy):
+def update_shipping(shipping_id: int, arrival_datetime: schemas.CheckpointDataRecord, db: db_dependecy):
     db_shipping = crud.update_shipping_arrival(db=db, shipping_id=shipping_id, arrival_datetime=arrival_datetime.arrival_datetime)
     if db_shipping is None:
         return JSONResponse(status_code=404, content={"message": "Shipping ID not found"})
