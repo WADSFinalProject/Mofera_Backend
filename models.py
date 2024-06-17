@@ -121,6 +121,7 @@ class Shipping(Base):
     expedition = Column(String(500))
     centra_id = Column(Integer)
     eta_datetime = Column(DateTime)
+    arrival_datetime = Column(DateTime, nullable=True)
     # expedition_id = Column(Integer, ForeignKey("expedition.id"))
 
     # expedition = relationship("Expedition", backref="shipping")
