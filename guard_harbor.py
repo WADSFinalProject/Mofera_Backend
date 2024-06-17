@@ -49,6 +49,7 @@ def add_checkpoint_data(checkpoint: schemas.CheckpointDataRecord, db: db_depende
     for id in checkpoint.package_ids:
         print(id)
         crud.update_checkpoint(db=db, id=id,)
+        crud.update_package_receival_datetime(db=db, package_id=id, received_datetime=db_checkpoint.arrival_datetime)
     return JSONResponse(content={"detail": "checkpoint record added successfully"}, status_code=status.HTTP_201_CREATED)
 
 # @router.post("/update_checkpoint", dependencies=[Depends(role_access(RoleEnum.GuardHarbor))])

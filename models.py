@@ -88,7 +88,7 @@ class PackageData(Base):
     weight = Column(Float)
     shipping_id = Column(Integer, ForeignKey("shipping.id"), nullable=True)
     status = Column(Integer, default=0)
-    received_date = Column(Date, nullable=True)
+    received_datetime = Column(DateTime, nullable=True)
     reception_id = Column(Integer, nullable=True)
     exp_date = Column(Date, nullable=True)
     created_datetime = Column(DateTime, nullable=True)

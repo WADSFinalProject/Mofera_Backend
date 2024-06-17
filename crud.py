@@ -486,6 +486,17 @@ def update_package_status(db: Session, package_id: int, status: int):
         return db_package
     return None
 
+def update_package_receival_datetime(db: Session, package_id: int, received_datetime: datetime):
+    db_package = get_package_by_id(db, package_id)
+    if db_package:
+        setattr(db_package, "received_datetime", received_datetime)
+        db.commit()
+        db.refresh(db_package)
+        print(received_datetime)
+
+        return db_package 
+    return None
+
 def check_package_expiry(db: Session):
     now = date.utcnow()
     expired_packages = db.query(models.PackageData).filter(models.PackageData.status < 4, models.PackageData.exp_date < now).all()
