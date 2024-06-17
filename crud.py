@@ -456,6 +456,14 @@ def update_shipping(db: Session, shipping_id: int, shipping: schemas.ShippingDat
         db.refresh(db_shipping)
     return db_shipping
 
+def update_shipping_arrival(db: Session, shipping_id: int, arrival_datetime: datetime):
+    shipping = db.query(models.Shipping).filter(models.Shipping.id == shipping_id).first()
+    if shipping:
+        shipping.arrival_datetime = arrival_datetime
+        db.commit()
+        db.refresh(shipping)
+    return shipping
+
 
 def update_centra_notifications(db: Session, centra_notif_id: int, centra_notif: schemas.CentraNotification):
     db_centra_notif = get_centra_notifications_by_id(db, centra_notif_id)
