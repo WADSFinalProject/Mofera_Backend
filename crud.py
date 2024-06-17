@@ -407,7 +407,7 @@ def create_GuardHarbor_notifications(db: Session, message:str, id:int, shipping_
     return db_guard_harbor_notif
 
 def create_reception_packages(db: Session, reception_packages: schemas.ReceptionPackageRecord):
-    db_reception_packages = models.ReceptionPackage(**reception_packages.model_dump(exclude={"package_id"}))
+    db_reception_packages = models.ReceptionPackage(**reception_packages.model_dump(exclude={"package_id"}), package_id=str(reception_packages.package_id).strip("[]"))
     db.add(db_reception_packages)
     db.commit()
     db.refresh(db_reception_packages)
