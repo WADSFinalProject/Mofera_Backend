@@ -207,6 +207,10 @@ class ReceptionPackageBase(BaseModel):
     weight: float
     centra_id: str
     receival_datetime: datetime
+    guard_harbor_name: str
+    xyz_name: str
+    description: str
+
 
 class ReceptionPackageRecord(ReceptionPackageBase):
     pass

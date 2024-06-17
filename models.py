@@ -200,8 +200,11 @@ class GuardHarborNotification(Base):
 class ReceptionPackage(Base):
     __tablename__ = "reception_packages"
     id = Column(Integer, primary_key=True, index=True)
+    package_id = Column(String(length=2000))
     total_packages_received = Column(Integer)
     weight = Column(Float)
     receival_datetime = Column(DateTime)
     centra_id = Column(String(length=500))
-
+    guard_harbor_name = Column(String(length=500))
+    xyz_name = Column(String(length=500))
+    description = Column(String(length=500))
