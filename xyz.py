@@ -230,7 +230,7 @@ def add_checkpoint_data(reception: schemas.ReceptionPackageRecord, db: db_depend
     db_reception = crud.create_reception_packages(db=db, reception_packages=reception)
     for id in reception.package_id:
         crud.update_reception_detail(db=db, id=id, reception_id=db_reception.id)
-    return JSONResponse(content={"detail": "reception record added successfully"}, status_code=status.HTTP_201_CREATED)
+    return JSONResponse(content={"detail": "reception record added successfully", "data":{"id": db_reception.id}}, status_code=status.HTTP_201_CREATED)
 
 @router.get("/checkpoints", dependencies=[Depends(role_access(RoleEnum.xyz))])
 def get_checkpoint(db: db_dependecy):
