@@ -221,3 +221,28 @@ def add_checkpoint_data(reception: schemas.ReceptionPackageRecord, db: db_depend
     for id in reception.package_id:
         crud.update_reception_detail(db=db, id=id, reception_id=db_reception.id)
     return JSONResponse(content={"detail": "reception record added successfully"}, status_code=status.HTTP_201_CREATED)
+
+@router.get("/checkpoints", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_checkpoint(db: db_dependecy):
+    db_checkpoint = crud.get_checkpoints(db=db)
+    return db_checkpoint
+
+@router.get("/packages_status", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_packages_with_status(status: int, db: db_dependecy):
+    db_packages = crud.get_packages_by_status(db=db, status=status)
+    return db_packages
+
+@router.get("/reception_packages", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_reception_packages(db: db_dependecy):
+    db_reception = crud.get_reception_packages(db=db)
+    return db_reception
+
+@router.get("/packages", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_packages(db: db_dependecy):
+    db_packages = crud.get_packages(db=db)
+    return db_packages
+
+@router.get("/shipping", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_shipping(db: db_dependecy):
+    db_shipping = crud.get_shipping(db=db)
+    return db_shipping
