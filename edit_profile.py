@@ -19,9 +19,8 @@ bcrypt_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 class UpdateProfileRequest(BaseModel):
     username: str
     email: EmailStr
-    new_password: Optional[str]
-    confirm_password: Optional[str]
-    centra_unit: Optional[str]
+    new_password: Optional[str] = None
+    confirm_password: Optional[str] = None
 
 
 @router.put("/", status_code=status.HTTP_200_OK)
@@ -50,8 +49,6 @@ async def update_profile(
                 )
             user.hashed_password = bcrypt_context.hash(
                 update_profile_request.new_password)
-        if user.role == RoleEnum.centra:
-            user.centra_unit = update_profile_request.centra_unit
 
         db.commit()
 
