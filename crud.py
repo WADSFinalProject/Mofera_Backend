@@ -39,16 +39,55 @@ def get_package_by_id(db: Session, package_id: int):
 def get_reception_packages_by_id(db: Session, reception_packages_id: int):
     return db.query(models.ReceptionPackage).filter(models.ReceptionPackage.id == reception_packages_id).first()
 
-def get_checkpoints(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+def get_checkpoints(db: Session, year: int = 0, month: int = 0, day: int = 0, filter: str = "", skip: int = 0, limit: int = 20):
     query = db.query(models.CheckpointData)
-    if date_filter:
-        if before:
-            query = query.filter(models.CheckpointData.arrival_datetime < date_filter)
-        elif after:
-            query = query.filter(models.CheckpointData.arrival_datetime > date_filter)
-        else:
-            query = query.filter(models.CheckpointData.arrival_datetime == date_filter)
-    return query.offset(skip).limit(limit).all()
+
+    if year and month and day:
+        if filter == "w":
+            # Calculate start of week
+            start_date = date(year, month, day) - timedelta(days=date(year, month, day).weekday())
+            # Ensure the end date is the start date + 6 days to cover the whole week
+            end_date = start_date + timedelta(days=6)
+            query = query.filter(func.DATE(models.CheckpointData.arrival_datetime).between(start_date, end_date))
+        else: query = query.filter(func.DATE(models.CheckpointData.arrival_datetime) == date(year, month, day))
+
+    elif year:
+        query = query.filter(extract("year", models.CheckpointData.arrival_datetime) == year)
+
+        if month:
+            query = query.filter(extract("month", models.CheckpointData.arrival_datetime) == month)
+
+    if skip:
+        query = query.offset(skip)
+    
+    if limit:
+        query = query.limit(limit)  
+
+    return query.all()
+
+# def get_checkpoints(db: Session, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+#     query = db.query(models.CheckpointData)
+#     if date_filter:
+#         if before:
+#             query = query.filter(models.CheckpointData.arrival_datetime < date_filter)
+#         elif after:
+#             query = query.filter(models.CheckpointData.arrival_datetime > date_filter)
+#         else:
+#             query = query.filter(models.CheckpointData.arrival_datetime == date_filter)
+#     return query.offset(skip).limit(limit).all()
+def get_checkpoint_summary(db: Session, shipping_id: int = 0):
+    today = date.today()
+    query = db.query(models.CheckpointData)
+    
+    if shipping_id:
+        query = query.filter(models.CheckpointData.shipping_id == shipping_id)
+
+    total = len(query.all())
+    monthly = len(get_checkpoints(db=db, year=today.year, month=today.month))/today.day
+    today = len(get_checkpoints(db=db, year=today.year, month=today.month, day=today.day))
+    
+    return {"total": total, "monthly": monthly, "today": today}
+
 
 def get_users(db: Session, skip: int = 0, limit: int = 10000):
     return db.query(models.Users).offset(skip).limit(limit).all()
@@ -115,7 +154,7 @@ def get_wet_leaves(db: Session, centra_id: int = 0, skip: int = 0, limit: int = 
 
 def get_wet_summary(db: Session, centra_id: int = 0):
     today = date.today()
-    query = db.query(models.Wet.weight)
+    query = db.query(models.Wet)
     
     if centra_id:
         query = query.filter(models.Wet.centra_id == centra_id)
@@ -197,7 +236,7 @@ def get_dry_leaves_mobile(db: Session, date_origin:date, interval: str, centra_i
 
 def get_dry_summary(db: Session, centra_id: int = 0):
     today = date.today()
-    query = db.query(models.Dry.weight)
+    query = db.query(models.Dry)
     
     if centra_id:
         query = query.filter(models.Dry.centra_id == centra_id)
@@ -248,7 +287,7 @@ def get_flour_by_floured_date(db: Session, centra_id: int = 0, skip: int = 0, li
 
 def get_flour_summary(db: Session, centra_id: int = 0):
     today = date.today()
-    query = db.query(models.Flour.weight)
+    query = db.query(models.Flour)
     
     if centra_id:
         query = query.filter(models.Flour.centra_id == centra_id)
