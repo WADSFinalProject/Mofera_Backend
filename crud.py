@@ -357,18 +357,45 @@ def get_packages_created(db: Session, centra_id: int, year: int = 0, month: int 
     return query.all()
      
 
-def get_shipping(db: Session, centra_id: int = 0, skip: int = 0, limit: int = 500, date_filter: date = None, before: bool = None, after: bool = None):
+def get_shipping(db: Session, centra_id: int=0, year: int = 0, month: int = 0, day: int = 0, filter: str = "", skip: int = 0, limit: int = 20):
     query = db.query(models.Shipping)
-    if date_filter:
-        if before:
-            query = query.filter(models.Shipping.departure_date < date_filter)
-        elif after:
-            query = query.filter(models.Shipping.departure_date > date_filter)
-        else:
-            query = query.filter(models.Shipping.departure_date == date_filter)
+    if centra_id: query = query.filter(models.Shipping.centra_id == centra_id)
+
+    if year and month and day:
+        if filter == "w":
+            # Calculate start of week
+            start_date = date(year, month, day) - timedelta(days=date(year, month, day).weekday())
+            # Ensure the end date is the start date + 6 days to cover the whole week
+            end_date = start_date + timedelta(days=6)
+            query = query.filter(func.DATE(models.Shipping.departure_datetime).between(start_date, end_date))
+        else: query = query.filter(func.DATE(models.Shipping.departure_datetime) == date(year, month, day))
+
+    elif year:
+        query = query.filter(extract("year", models.Shipping.departure_datetime) == year)
+
+        if month:
+            query = query.filter(extract("month", models.Shipping.departure_datetime) == month)
+
+    if skip:
+        query = query.offset(skip)
+    
+    if limit:
+        query = query.limit(limit)  
+
+    return query.all()
+
+def get_shipment_summary(db: Session, centra_id: int = 0):
+    today = date.today()
+    query = db.query(models.Shipping)
+    
     if centra_id:
-        query = filter_by_centra_id(query, models.Shipping, centra_id)
-    return query.offset(skip).limit(limit).all()
+        query = query.filter(models.Shipping.centra_id == centra_id)
+
+    total = len(query.all())
+    monthly = len(get_checkpoints(db=db, year=today.year, month=today.month))/today.day
+    today = len(get_checkpoints(db=db, year=today.year, month=today.month, day=today.day))
+    
+    return {"total": total, "monthly": monthly, "today": today}
 
 def get_centra_notifications(db: Session, centra_id: int = 0, skip: int = 0, limit: int = 100, date_filter: date = None, filter: Union[str, None] = None):
     query = db.query(models.CentraNotification)
