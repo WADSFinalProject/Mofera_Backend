@@ -270,7 +270,7 @@ def get_packages_created(db: Session, centra_id: int, year: int = 0, month: int 
     return query.all()
      
 
-def get_shipping(db: Session, centra_id: int = 0, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
+def get_shipping(db: Session, centra_id: int = 0, skip: int = 0, limit: int = 500, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Shipping)
     if date_filter:
         if before:
