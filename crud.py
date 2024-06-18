@@ -330,6 +330,14 @@ def get_packages(db: Session, centra_id: int=0):
     if centra_id: query = filter_by_centra_id(query, models.PackageData, centra_id)
     return query.all()
 
+def get_package_summary(db: Session, centra_id: int=0):
+    query = db.query(models.PackageData)
+    if centra_id: query = filter_by_centra_id(query, models.PackageData, centra_id)
+    total = len(query.all())
+    pending = len(query.filter(models.PackageData.status == 1).all())
+    arrived  = len(query.filter(models.PackageData.status == 2 or models.PackageData.status == 3).all())
+    return {"total": total, "pending": pending, "arrived": arrived}
+
 def get_packages_created(db: Session, centra_id: int, year: int = 0, month: int = 0, day: int = 0, filter: str = "", skip: int = 0, limit: int = 20):
     query = db.query(models.PackageData).filter(models.PackageData.centra_id == centra_id)
 

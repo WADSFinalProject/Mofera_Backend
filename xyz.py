@@ -321,6 +321,11 @@ def get_packages(db: db_dependecy):
     db_packages = crud.get_packages(db=db)
     return db_packages
 
+@router.get("/get_package_summary", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_packages(db: db_dependecy):
+    db_packages = crud.get_package_summary(db=db)
+    return db_packages
+
 @router.get("/get_shipping_summary", dependencies=[Depends(role_access(RoleEnum.xyz))])
 def get_shipping_summary(db:db_dependecy, centra_id: int=0):
 
