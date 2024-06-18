@@ -57,33 +57,33 @@ def get_package(db:db_dependecy, s:str = "", p: int = 0):
     return db_package
 
 @router.get("/quick_get_wet_stats", dependencies=[Depends(role_access(RoleEnum.xyz))])
-def quick_get_wet_statistics(db:db_dependecy, interval:str, date:date = date.today(), slice:int = 6):
+def quick_get_wet_statistics(db:db_dependecy, interval:str, date:date = date.today(), centra_id:int =0, slice:int = 6):
     label = list()
     data = list()
     if interval == "daily":
         for offset in range(slice):
             offset_date = date - timedelta(days=offset)
             label.append(offset_date.strftime("%d/%m/%Y"))
-            data.append(sum(wet.weight for wet in crud.get_wet_leaves(db=db, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day)))
+            data.append(sum(wet.weight for wet in crud.get_wet_leaves(db=db, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, centra_id=centra_id)))
     
     elif interval == "weekly":
         for offset in range(slice):
             offset_date = date - timedelta(days=date.weekday()+1+(offset-1)*7)
             label.append(offset_date.strftime("%d/%m/%Y"))
-            data.append(sum(wet.weight for wet in crud.get_wet_leaves(db=db, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, filter="w")))
+            data.append(sum(wet.weight for wet in crud.get_wet_leaves(db=db, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, centra_id=centra_id, filter="w")))
     
     elif interval == "monthly":
         for offset in range(slice):
             offset_date = date.replace(year= date.year-1 if date.month-offset < 1  else date.year, month=date.month-offset if date.month-offset > 0 else 12)
             label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]
 ).strftime("%Y-%m"))
-            data.append(sum(wet.weight for wet in crud.get_wet_leaves(db=db, limit=0, year=offset_date.year, month=offset_date.month)))
+            data.append(sum(wet.weight for wet in crud.get_wet_leaves(db=db, limit=0, year=offset_date.year, month=offset_date.month, centra_id=centra_id)))
     
     elif interval == "yearly":
         for offset in range(slice):
             offset_date = date.replace(year=date.year-offset)
             label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]).strftime("%Y"))
-            data.append(sum(wet.weight for wet in crud.get_wet_leaves(db=db, limit=0, year=offset_date.year)))
+            data.append(sum(wet.weight for wet in crud.get_wet_leaves(db=db, limit=0, year=offset_date.year, centra_id=centra_id)))
     label.reverse()
     data.reverse()
 
@@ -102,33 +102,33 @@ def get_wet_datas(db:db_dependecy, centra_id: int = 0):
     return db_wet
 
 @router.get("/quick_get_dry_stats", dependencies=[Depends(role_access(RoleEnum.xyz))])
-def quick_dry_quick_statistics(db:db_dependecy, interval:str, date:date = date.today(), slice:int = 6):
+def quick_dry_quick_statistics(db:db_dependecy, interval:str, date:date = date.today(), slice:int = 6, centra_id:int = 0):
     label = list()
     data = list()
     if interval == "daily":
         for offset in range(slice):
             offset_date = date - timedelta(days=offset)
             label.append(offset_date.strftime("%d/%m/%Y"))
-            data.append(sum(dry.weight for dry in crud.get_dry_leaves_by_dried_date(db=db, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day)))
+            data.append(sum(dry.weight for dry in crud.get_dry_leaves_by_dried_date(db=db, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, centra_id=centra_id)))
     
     elif interval == "weekly":
         for offset in range(slice):
             offset_date = date - timedelta(days=date.weekday()+1+(offset-1)*7)
             label.append(offset_date.strftime("%d/%m/%Y"))
-            data.append(sum(dry.weight for dry in crud.get_dry_leaves_by_dried_date(db=db, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, filter="w")))
+            data.append(sum(dry.weight for dry in crud.get_dry_leaves_by_dried_date(db=db, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, centra_id=centra_id, filter="w")))
     
     elif interval == "monthly":
         for offset in range(slice):
             offset_date = date.replace(year= date.year-1 if date.month-offset < 1  else date.year, month=date.month-offset if date.month-offset > 0 else 12)
             label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]
 ).strftime("%Y-%m"))
-            data.append(sum(dry.weight for dry in crud.get_dry_leaves_by_dried_date(db=db, limit=0, year=offset_date.year, month=offset_date.month)))
+            data.append(sum(dry.weight for dry in crud.get_dry_leaves_by_dried_date(db=db, limit=0, year=offset_date.year, month=offset_date.month, centra_id=centra_id)))
     
     elif interval == "yearly":
         for offset in range(slice):
             offset_date = date.replace(year=date.year-offset)
             label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]).strftime("%Y"))
-            data.append(sum(dry.weight for dry in crud.get_dry_leaves_by_dried_date(db=db, limit=0, year=offset_date.year)))
+            data.append(sum(dry.weight for dry in crud.get_dry_leaves_by_dried_date(db=db, limit=0, year=offset_date.year, centra_id=centra_id)))
     label.reverse()
     data.reverse()
 
@@ -147,33 +147,33 @@ def get_wet_datas(db:db_dependecy, centra_id: int = 0):
     return db_wet
 
 @router.get("/quick_get_flour_stats", dependencies=[Depends(role_access(RoleEnum.xyz))])
-def quick_get_flour_statistics(db:db_dependecy, interval:str, date:date = date.today(), slice:int = 6):
+def quick_get_flour_statistics(db:db_dependecy, interval:str, date:date = date.today(), slice:int = 6, centra_id:int = 0):
     label = list()
     data = list()
     if interval == "daily":
         for offset in range(slice):
             offset_date = date - timedelta(days=offset)
             label.append(offset_date.strftime("%d/%m/%Y"))
-            data.append(sum(flour.weight for flour in crud.get_flour_by_floured_date(db=db, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day)))
+            data.append(sum(flour.weight for flour in crud.get_flour_by_floured_date(db=db, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, centra_id=centra_id)))
     
     elif interval == "weekly":
         for offset in range(slice):
             offset_date = date - timedelta(days=date.weekday()+1+(offset-1)*7)
             label.append(offset_date.strftime("%d/%m/%Y"))
-            data.append(sum(flour.weight for flour in crud.get_flour_by_floured_date(db=db, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, filter="w")))
+            data.append(sum(flour.weight for flour in crud.get_flour_by_floured_date(db=db, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, filter="w", centra_id=centra_id)))
     
     elif interval == "monthly":
         for offset in range(slice):
             offset_date = date.replace(year= date.year-1 if date.month-offset < 1  else date.year, month=date.month-offset if date.month-offset > 0 else 12)
             label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]
 ).strftime("%Y-%m"))
-            data.append(sum(flour.weight for flour in crud.get_flour_by_floured_date(db=db, limit=0, year=offset_date.year, month=offset_date.month)))
+            data.append(sum(flour.weight for flour in crud.get_flour_by_floured_date(db=db, limit=0, year=offset_date.year, month=offset_date.month, centra_id=centra_id)))
     
     elif interval == "yearly":
         for offset in range(slice):
             offset_date = date.replace(year=date.year-offset)
             label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]).strftime("%Y"))
-            data.append(sum(flour.weight for flour in crud.get_flour_by_floured_date(db=db, limit=0, year=offset_date.year)))
+            data.append(sum(flour.weight for flour in crud.get_flour_by_floured_date(db=db, limit=0, year=offset_date.year, centra_id=centra_id)))
     label.reverse()
     data.reverse()
 
