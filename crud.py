@@ -456,6 +456,13 @@ def update_reception_detail(db:Session, id:int, reception_id:int):
     db.refresh(db_package)
     return db_package
 
+def create_centra(db: Session, centra: schemas.CentraRecord):
+    db_centra = models.Centra(location=centra.location)
+    db.add(db_centra)
+    db.commit()
+    db.refresh(db_centra)
+    return db_centra
+
 def create_collection(db: Session, collection: schemas.CollectionRecord, user: models.Users):
     db_collection = models.Collection(retrieval_datetime=collection.retrieval_datetime, weight=collection.weight, centra_id=user.centra_unit)
     db.add(db_collection)

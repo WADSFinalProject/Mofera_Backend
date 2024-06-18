@@ -49,6 +49,11 @@ def get_user(db:db_dependecy, s:str = "", p: int = 0):
     db_user = crud.get_users(db=db)
     return db_user
 
+@router.post("/new_centra", dependencies=[Depends(role_access(RoleEnum.admin))])
+def add_centra(db:db_dependecy, record:schemas.CentraRecord, s:str = "", p: int = 0):
+    db_centra = crud.create_centra(db=db, centra=record)
+    return db_centra
+
 @router.get("/centra", dependencies=[Depends(role_access(RoleEnum.admin))])
 def get_centra(db:db_dependecy, s:str = "", p: int = 0):
 

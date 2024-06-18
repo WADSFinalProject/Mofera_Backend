@@ -32,6 +32,12 @@ class DatetimeRecord(BaseModel):
 class DateRecord(BaseModel):
     date: date
 
+class CentraBase(BaseModel):
+    location: str
+
+class CentraRecord(CentraBase):
+    pass
+
 class CollectionBase(BaseModel):
     weight: float
 
