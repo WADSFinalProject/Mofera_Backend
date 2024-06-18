@@ -44,6 +44,12 @@ db_dependecy = Annotated[Session, Depends(get_db)]
 
 logger = logging.getLogger(__name__)
 
+@router.get("/get_package_by_id", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_package(db:db_dependecy, s:str = ""):
+
+    db_package = crud.get_package_by_id(db=db, package_id=s)
+    return db_package
+
 @router.get("/get_package", dependencies=[Depends(role_access(RoleEnum.xyz))])
 def get_package(db:db_dependecy, s:str = "", p: int = 0):
 
@@ -174,13 +180,13 @@ def get_flour_datas(db:db_dependecy, p: int = 0):
     db_flour = crud.get_flour(db=db, limit=50,)
     return db_flour
 
-@router.post("/get_reception", dependencies=[Depends(role_access(RoleEnum.xyz))])
+@router.get("/get_reception", dependencies=[Depends(role_access(RoleEnum.xyz))])
 def add_checkpoint_data(db: db_dependecy):
     db_reception = crud.get_reception_packages(db=db)
     return db_reception
 
-@router.post("/search_reception", dependencies=[Depends(role_access(RoleEnum.xyz))])
-def add_checkpoint_data(id:int, db: db_dependecy):
+@router.get("/search_reception", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def search_reception(id:int, db: db_dependecy):
     db_reception = crud.get_reception_packages_by_id(db=db, reception_packages_id=id)
     return db_reception
 
@@ -226,11 +232,11 @@ def rescale_package(id: int, rescale: schemas.RescaledRecord, db:db_dependecy):
 #     return JSONResponse(content={"detail": "receival record added successfully"}, status_code=status.HTTP_201_CREATED)
 
 @router.post("/add_reception", dependencies=[Depends(role_access(RoleEnum.xyz))])
-def add_checkpoint_data(reception: schemas.ReceptionPackageRecord, db: db_dependecy):
+def add_reception_data(reception: schemas.ReceptionPackageRecord, db: db_dependecy):
     db_reception = crud.create_reception_packages(db=db, reception_packages=reception)
     for id in reception.package_id:
         crud.update_reception_detail(db=db, id=id, reception_id=db_reception.id)
-    return JSONResponse(content={"detail": "reception record added successfully", "data":{"id": db_reception.id}}, status_code=status.HTTP_201_CREATED)
+    return JSONResponse(content={"detail": "reception record added successfully", "id": db_reception.id}, status_code=status.HTTP_201_CREATED)
 
 @router.get("/checkpoints", dependencies=[Depends(role_access(RoleEnum.xyz))])
 def get_checkpoint(db: db_dependecy):

@@ -106,6 +106,10 @@ def get_flour(db: db_dependecy, current_user: Users = Depends(get_current_user))
 @router.get("/packages", dependencies=[Depends(role_access(RoleEnum.centra))])
 def get_packages(db: db_dependecy, current_user: Users = Depends(get_current_user)):
     db_packages = crud.get_packages(db=db, centra_id=int(current_user.centra_unit))
+    for package in db_packages:
+        if package.exp_date <= date.today() and package.status != 3:
+            crud.update_package_status(db=db, db_package=package, status=4)
+    db_packages = crud.get_packages(db=db, centra_id=int(current_user.centra_unit))
     return db_packages
 
 @router.get("/packages_status", dependencies=[Depends(role_access(RoleEnum.centra))])

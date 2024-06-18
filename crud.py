@@ -69,7 +69,7 @@ def get_centra(db: Session, skip: int = 0, limit: int = 50):
 
 def update_checkpoint(db: Session, id: int):
 
-    update_package_status(db, id, 2)
+    update_package_status_by_id(db, id, 2)
     return
 
 def filter_by_centra_id(query: Query, model: models, centra_id: int):
@@ -322,7 +322,7 @@ def get_reception_packages(db: Session, skip: int = 0, limit: int = 100, date_fi
 def update_package_shipping_detail(db:Session, id:int, shipping_id:int):
     db_package = db.query(models.PackageData).filter(models.PackageData.id == id).first()
     setattr(db_package, "shipping_id", shipping_id,)
-    update_package_status(db, id, 1)
+    update_package_status_by_id(db, id, 1)
     db.commit()
     db.refresh(db_package)
     return db_package
@@ -483,13 +483,21 @@ def update_reception_packages(db: Session, reception_packages_id: int, reception
         db.refresh(db_reception_packages)
     return db_reception_packages
 
-def update_package_status(db: Session, package_id: int, status: int):
+def update_package_status_by_id(db: Session, package_id: int, status: int):
     db_package = get_package_by_id(db, package_id)
     if db_package:
         setattr(db_package, "status", status)
         db.commit()
         db.refresh(db_package)
-        print(status)
+
+        return db_package
+    return None
+
+def update_package_status(db: Session, db_package: models.PackageData, status: int):
+    if db_package:
+        setattr(db_package, "status", status)
+        db.commit()
+        db.refresh(db_package)
 
         return db_package
     return None

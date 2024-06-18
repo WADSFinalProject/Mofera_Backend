@@ -57,7 +57,6 @@ app.include_router(profiles.router)
 app.include_router(edit_profile.router)
 app.include_router(forget_password.router)
 app.include_router(xyz.router)
-""" app.include_router(profilecontent.router) """
 app.include_router(admin.router)
 
 origins = [
