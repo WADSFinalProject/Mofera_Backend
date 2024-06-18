@@ -117,11 +117,10 @@ def get_wet_summary(db: Session, centra_id: int = 0):
     today = date.today()
     query = db.query(models.Wet.weight)
     
-    aggr = func.sum(query.as_scalar())
     if centra_id:
-        aggr = aggr.filter(models.Wet.centra_id == centra_id)
+        query = query.filter(models.Wet.centra_id == centra_id)
 
-    total = db.query(aggr).first()[0]
+    total = sum(wet.weight for wet in query.all())
     if total is None: total = 0
     monthly = sum(wet.weight for wet in get_wet_leaves(db=db, centra_id=centra_id, year=today.year, month=today.month))/today.day
     if monthly is None: monthly = 0
@@ -200,11 +199,10 @@ def get_dry_summary(db: Session, centra_id: int = 0):
     today = date.today()
     query = db.query(models.Dry.weight)
     
-    aggr = func.sum(query.as_scalar())
     if centra_id:
-        aggr = aggr.filter(models.Dry.centra_id == centra_id)
+        query = query.filter(models.Dry.centra_id == centra_id)
 
-    total = db.query(aggr).first()[0]
+    total = sum(dry.weight for dry in query.all())
     if total is None: total = 0
     monthly = sum(dry.weight for dry in get_dry_leaves_by_dried_date(db=db, centra_id=centra_id, year=today.year, month=today.month))/today.day
     if monthly is None: monthly = 0
@@ -252,11 +250,10 @@ def get_flour_summary(db: Session, centra_id: int = 0):
     today = date.today()
     query = db.query(models.Flour.weight)
     
-    aggr = func.sum(query.as_scalar())
     if centra_id:
-        aggr = aggr.filter(models.Flour.centra_id == centra_id)
-    
-    total = db.query(aggr).first()[0]
+        query = query.filter(models.Flour.centra_id == centra_id)
+
+    total = sum(flour.weight for flour in query.all())
     if total is None: total = 0
     monthly = sum(flour.weight for flour in get_flour_by_floured_date(db=db, centra_id=centra_id, year=today.year, month=today.month))/today.day
     if monthly is None: monthly = 0
