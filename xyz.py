@@ -95,6 +95,12 @@ def get_wet_datas(db:db_dependecy, p: int = 0):
     db_wet = crud.get_wet_leaves(db=db, limit=50,)
     return db_wet
 
+@router.get("/get_wet_summary", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_wet_datas(db:db_dependecy, centra_id: int = 0):
+
+    db_wet = crud.get_wet_summary(db=db, centra_id=centra_id)
+    return db_wet
+
 @router.get("/quick_get_dry_stats", dependencies=[Depends(role_access(RoleEnum.xyz))])
 def quick_dry_quick_statistics(db:db_dependecy, interval:str, date:date = date.today(), slice:int = 6):
     label = list()
@@ -133,6 +139,12 @@ def get_dry_datas(db:db_dependecy, p: int = 0):
 
     db_dry = crud.get_dry_leaves(db=db, limit=50,)
     return db_dry
+
+@router.get("/get_dry_summary", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_wet_datas(db:db_dependecy, centra_id: int = 0):
+
+    db_wet = crud.get_dry_summary(db=db, centra_id=centra_id)
+    return db_wet
 
 @router.get("/quick_get_flour_stats", dependencies=[Depends(role_access(RoleEnum.xyz))])
 def quick_get_flour_statistics(db:db_dependecy, interval:str, date:date = date.today(), slice:int = 6):
@@ -179,6 +191,12 @@ def get_flour_datas(db:db_dependecy, p: int = 0):
 
     db_flour = crud.get_flour(db=db, limit=50,)
     return db_flour
+
+@router.get("/get_flour_summary", dependencies=[Depends(role_access(RoleEnum.xyz))])
+def get_wet_datas(db:db_dependecy, centra_id: int = 0):
+
+    db_wet = crud.get_flour_summary(db=db, centra_id=centra_id)
+    return db_wet
 
 @router.get("/get_reception", dependencies=[Depends(role_access(RoleEnum.xyz))])
 def add_checkpoint_data(db: db_dependecy):

@@ -113,6 +113,24 @@ def get_wet_leaves(db: Session, centra_id: int = 0, skip: int = 0, limit: int = 
     
     return query.all()
 
+def get_wet_summary(db: Session, centra_id: int = 0):
+    today = date.today()
+    query = db.query(models.Wet.weight)
+    
+    aggr = func.sum(query.as_scalar())
+    if centra_id:
+        aggr = aggr.filter(models.Wet.centra_id == centra_id)
+
+    total = db.query(aggr).first()[0]
+    if total is None: total = 0
+    monthly = sum(wet.weight for wet in get_wet_leaves(db=db, centra_id=centra_id, year=today.year, month=today.month))/today.day
+    if monthly is None: monthly = 0
+    today = sum(wet.weight for wet in get_wet_leaves(db=db, centra_id=centra_id, year=today.year, month=today.month, day=today.day))
+    if today is None: today = 0
+    
+    return {"total": total, "monthly": monthly, "today": today}
+
+    
 def get_washed_wet_leaves(db: Session, centra_id: int = 0, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Wet).filter(models.Wet.washed_datetime <= datetime.datetime.now())
     if date_filter:
@@ -178,6 +196,22 @@ def get_dry_leaves_mobile(db: Session, date_origin:date, interval: str, centra_i
     if centra_id: query = filter_by_centra_id(query, models.Dry, centra_id)
     return query.offset(skip).limit(limit).all()
 
+def get_dry_summary(db: Session, centra_id: int = 0):
+    today = date.today()
+    query = db.query(models.Dry.weight)
+    
+    aggr = func.sum(query.as_scalar())
+    if centra_id:
+        aggr = aggr.filter(models.Dry.centra_id == centra_id)
+
+    total = db.query(aggr).first()[0]
+    if total is None: total = 0
+    monthly = sum(dry.weight for dry in get_dry_leaves_by_dried_date(db=db, centra_id=centra_id, year=today.year, month=today.month))/today.day
+    if monthly is None: monthly = 0
+    today = sum(dry.weight for dry in get_dry_leaves_by_dried_date(db=db, centra_id=centra_id, year=today.year, month=today.month, day=today.day))
+    if today is None: today = 0
+    return {"total": total, "monthly": monthly, "today": today}
+
 def get_flour(db: Session, centra_id: int = 0, skip: int = 0, limit: int = 10, date_filter: date = None, before: bool = None, after: bool = None):
     query = db.query(models.Flour)
     if date_filter:
@@ -213,6 +247,23 @@ def get_flour_by_floured_date(db: Session, centra_id: int = 0, skip: int = 0, li
     
 
     return query.all()
+
+def get_flour_summary(db: Session, centra_id: int = 0):
+    today = date.today()
+    query = db.query(models.Flour.weight)
+    
+    aggr = func.sum(query.as_scalar())
+    if centra_id:
+        aggr = aggr.filter(models.Flour.centra_id == centra_id)
+    
+    total = db.query(aggr).first()[0]
+    if total is None: total = 0
+    monthly = sum(flour.weight for flour in get_flour_by_floured_date(db=db, centra_id=centra_id, year=today.year, month=today.month))/today.day
+    if monthly is None: monthly = 0
+    today = sum(flour.weight for flour in get_flour_by_floured_date(db=db, centra_id=centra_id, year=today.year, month=today.month, day=today.day))
+    if today is None: today = 0
+    
+    return {"total": total, "monthly": monthly, "today": today}
 
 def wash_wet_leaves(db: Session, id: int, date: schemas.DatetimeRecord):
     query = db.query(models.Wet).filter(models.Wet.id == id).update({models.Wet.washed_datetime: date.datetime})
