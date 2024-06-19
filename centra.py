@@ -68,6 +68,13 @@ def add_flour(flour: schemas.FlourRecord, db: db_dependecy, current_user: Users 
     crud.create_centra_notifications(db=db, message=f"New flour added - Flour#{db_flour.id}", id=current_user.centra_unit)
     return JSONResponse(content={"detail": "Flour record added successfully"}, status_code=status.HTTP_201_CREATED)
 
+@router.get("/location", dependencies=[Depends(role_access(RoleEnum.centra))])
+def get_centra_location(db: db_dependecy, current_user: Users = Depends(get_current_user)):
+    db_centra = crud.get_centra_by_id(db=db, centra_id=int(current_user.centra_unit))
+    if not db_centra:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Centra not found")
+    return db_centra
+
 @router.get("/collection", dependencies=[Depends(role_access(RoleEnum.centra))])
 def get_collection(db: db_dependecy, current_user: Users = Depends(get_current_user)):
     db_collection = crud.get_collection(db=db, centra_id=int(current_user.centra_unit))
@@ -120,6 +127,11 @@ def get_packages_with_status(status: int, db: db_dependecy, current_user: Users 
 @router.get("/notification", dependencies=[Depends(role_access(RoleEnum.centra))])
 def get_notification(db: db_dependecy, current_user: Users = Depends(get_current_user)):
     db_packages = crud.get_centra_notifications(db=db, centra_id=int(current_user.centra_unit))
+    return db_packages
+
+@router.get("/recent_notification", dependencies=[Depends(role_access(RoleEnum.centra))])
+def get_recent_notification(db: db_dependecy, current_user: Users = Depends(get_current_user)):
+    db_packages = crud.get_recent_centra_notifications(db=db, centra_id=int(current_user.centra_unit))
     return db_packages
 
 @router.get("/shippings", dependencies=[Depends(role_access(RoleEnum.centra))])
