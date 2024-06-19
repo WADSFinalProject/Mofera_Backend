@@ -418,6 +418,24 @@ def get_centra_notifications(db: Session, centra_id: int = 0, skip: int = 0, lim
     if centra_id: query = filter_by_centra_id(query, models.CentraNotification, centra_id)
     return query.offset(skip).limit(limit).all()
 
+def get_recent_centra_notifications(db: Session, centra_id: int = 0, skip: int = 0, limit: int = 10, date_filter: date = None, filter: Union[str, None] = None):
+    query = db.query(models.CentraNotification)
+
+    if filter == "before":
+        query = query.filter(models.CentraNotification.date < date_filter)
+    elif filter == "after":
+        query = query.filter(models.CentraNotification.date > date_filter)
+    elif filter == "during":
+        query = query.filter(models.CentraNotification.date == date_filter)
+    
+    if centra_id:
+        query = filter_by_centra_id(query, models.CentraNotification, centra_id)
+
+    query = query.order_by(models.CentraNotification.date.desc())
+
+    return query.offset(skip).limit(limit).all()
+
+
 def get_guard_harbor_notifications(db: Session, skip: int = 0, limit: int = 100, date_filter: date = None, filter: Union[str, None] = None):
     query = db.query(models.GuardHarborNotification)
 
