@@ -333,39 +333,39 @@ def get_shipping_summary(db:db_dependecy, centra_id: int=0):
     return db_checkpoint
 
 @router.get("/quick_get_shipping_stats", dependencies=[Depends(role_access(RoleEnum.xyz))])
-def quick_shipping_statistics(db:db_dependecy, interval:str, date:date = date.today(), slice:int = 6):
+def quick_shipping_statistics(db:db_dependecy, interval:str, date:date = date.today(), slice:int = 6, centra_id: int=0):
     label = list()
     data = list()
     if interval == "daily":
         for offset in range(slice):
             offset_date = date - timedelta(days=offset)
             label.append(offset_date.strftime("%d/%m/%Y"))
-            data.append(len(crud.get_shipping(db=db, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day)))
+            data.append(len(crud.get_shipping(db=db, centra_id=centra_id, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day)))
     
     elif interval == "weekly":
         for offset in range(slice):
             offset_date = date - timedelta(days=date.weekday()+1+(offset-1)*7)
             label.append(offset_date.strftime("%d/%m/%Y"))
-            data.append(len(crud.get_shipping(db=db, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, filter="w")))
+            data.append(len(crud.get_shipping(db=db, centra_id=centra_id, limit=0, year=offset_date.year, month=offset_date.month, day=offset_date.day, filter="w")))
     
     elif interval == "monthly":
         for offset in range(slice):
             offset_date = date.replace(year= date.year-1 if date.month-offset < 1  else date.year, month=date.month-offset if date.month-offset > 0 else 12)
             label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]
 ).strftime("%Y-%m"))
-            data.append(len(crud.get_shipping(db=db, limit=0, year=offset_date.year, month=offset_date.month)))
+            data.append(len(crud.get_shipping(db=db, centra_id=centra_id, limit=0, year=offset_date.year, month=offset_date.month)))
     
     elif interval == "yearly":
         for offset in range(slice):
             offset_date = date.replace(year=date.year-offset)
             label.append(offset_date.replace(day=calendar.monthrange(offset_date.year, offset_date.month)[1]).strftime("%Y"))
-            data.append(len(crud.get_checkpoints(db=db, limit=0, year=offset_date.year)))
+            data.append(len(crud.get_shipping(db=db, centra_id=centra_id, limit=0, year=offset_date.year)))
     label.reverse()
     data.reverse()
 
     return {"label":label, "data":data}
 
 @router.get("/shipping", dependencies=[Depends(role_access(RoleEnum.xyz))])
-def get_shipping(db: db_dependecy):
-    db_shipping = crud.get_shipping(db=db)
+def get_shipping(db: db_dependecy, centra_id:int = 0):
+    db_shipping = crud.get_shipping(db=db, centra_id=centra_id)
     return db_shipping
