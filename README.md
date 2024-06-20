@@ -10,6 +10,7 @@ Mofera Naturals is a web application that provides a link between XYZ (the given
 
 ## Table of Contents
 - [Folder Structure](#folder-structure)
+- [Promo Video](#promo-video)
 - [Contributors](#contributors)
 
 ## Folder Structure
@@ -26,6 +27,9 @@ Mofera Naturals is a web application that provides a link between XYZ (the given
 - `requirements.txt`: List of Python dependencies.
 - `Pipfile`: Used for dependency management with Pipenv.
 - `vercel.json`: Configuration for deployment on Vercel.
+
+## Promo Video
+https://drive.google.com/file/d/1n-pEKj3-bcLcFGwR2tTHd_L5x54H7A1-/view?usp=drivesdk
 
 ## Contributors
 - [Abas Iman](https://github.com/abasiman)
